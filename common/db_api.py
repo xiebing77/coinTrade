@@ -22,15 +22,36 @@ def insert_order(order):
 
 
 def delete_order(order_id):
-    pass
+    CoinOrder.deleteBy(order_id=order_id)
 
 
-def update_order(order_id):
-    pass
+def copy_order(from_order, to_order):
+    to_order.order_id = from_order.order_id
+    to_order.symbol = from_order.symbol
+    to_order.create_date = from_order.create_date
+    to_order.type = from_order.type
+    to_order.price = from_order.price
+    to_order.avg_price = from_order.avg_price
+    to_order.amount = from_order.amount
+    to_order.deal_amount = from_order.deal_amount
+    to_order.status = from_order.status
+
+
+def update_order(order):
+    ret = get_order(order.order_id)
+    if len(ret) == 0:
+        insert_order(order)
+    else:
+        org_order = ret[0]
+        copy_order(order, org_order)
 
 
 def get_order(order_id):
-    pass
+    ret_list = []
+    ret = CoinOrder.selectBy(order_id=order_id)
+    for i in ret:
+        ret_list.append(i)
+    return ret_list
 
 
 if __name__ == "__main__":

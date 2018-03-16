@@ -1,6 +1,9 @@
 #!/usr/bin/python
+import os
+
+from common.email_obj import EmailObj
 from okex.spot_obj import SpotClass as okexSpotClass
-from common.db_api import *
+import common.db_api as dbApi
 
 PRICE_GAP = 0.05
 PRICE_RATIO_1 = PRICE_GAP
@@ -74,16 +77,27 @@ def sell_policy(spot_instance, float_digits, coin):
 
 
 if __name__ == "__main__":
+    """
     pair = 'dpy_eth'
     target_coin = 'dpy'
     base_coin = 'eth'
     # create a new instance
     okSpot = okexSpotClass(pair, '1day', 7, debug=True)
-    sell_policy(okSpot, 8, target_coin)
+    # sell_policy(okSpot, 8, target_coin)
     # buy_policy(okSpot, 8, base_coin)
     # print(okSpot.balance('dpy'))
     # print(okSpot.balance('eth'))
     # init_database()
-    order = okSpot.get_order('3174391')
+    order = okSpot.get_order('3229114')
+    print(order)
+    order = dbApi.get_order('3229114')
+    order[0].symbol = 'btc_eth'
     print(order)
     # insert_order(order)
+    """
+    email_srv = os.environ.get('EMAIL_SMTP')
+    email_user = os.environ.get('EMAIL_FROM')
+    email_pwd = os.environ.get('EMAIL_PWD')
+
+    email_obj = EmailObj(email_srv, email_user, email_pwd)
+    email_obj.send_mail('test', 'msg body', email_user, email_user, email_user)
