@@ -9,34 +9,50 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 
+def attachment(filename):
+    """
+    build attachment object
+    """
+    fd = open(filename, 'rb')
+    mime_type, mime_encoding = mimetypes.guess_type(filename)
+    if mime_encoding or (mime_type is None):
+        mime_type = 'application/octet-stream'
+
+    maintype, subtype = mime_type.split('/')
+
+    if maintype == 'text':
+        ret_val = MIMEText(fd.read(), _subtype=subtype)
+    else:
+        ret_val = MIMEBase(maintype, subtype)
+        ret_val.set_payload(fd.read())
+        encoders.encode_base64(ret_val)
+
+    ret_val.add_header('Content-Disposition', 'attachment',
+                       filename=filename.split('/')[-1])
+    fd.close()
+    return ret_val
+
+
+def add_table_head(header):
+    msg = '<tr>'
+    for i in header:
+        msg += '<td><strong>%s</strong></td>' % i
+    msg += '</tr>'
+    return msg
+
+
+def append_order(order):
+    msg = ''
+    for i in order:
+        msg += '<td><strong>%s</strong></td>' % i
+    return msg
+
+
 class EmailObj(object):
     def __init__(self, server, user, pwd):
         self.server = server
         self.user = user
         self.pwd = pwd
-
-    def attachment(self, filename):
-        """
-        build attachment object
-        """
-        fd = open(filename, 'rb')
-        mime_type, mime_encoding = mimetypes.guess_type(filename)
-        if mime_encoding or (mime_type is None):
-            mime_type = 'application/octet-stream'
-
-        maintype, subtype = mime_type.split('/')
-
-        if maintype == 'text':
-            ret_val = MIMEText(fd.read(), _subtype=subtype)
-        else:
-            ret_val = MIMEBase(maintype, subtype)
-            ret_val.set_payload(fd.read())
-            encoders.encode_base64(ret_val)
-
-        ret_val.add_header('Content-Disposition', 'attachment',
-                           filename=filename.split('/')[-1])
-        fd.close()
-        return ret_val
 
     def send_mail(self, subject, msg_body, from_addr, to_addr, cc_addr='', attachments=None):
         msg = MIMEMultipart()
@@ -50,7 +66,7 @@ class EmailObj(object):
 
         if attachments is not None:
             for filename in attachments:
-                msg.attach(self.attachment(filename))
+                msg.attach(attachment(filename))
 
         s = smtplib.SMTP(self.server)
         # s.set_debuglevel(True)

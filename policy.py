@@ -99,5 +99,39 @@ if __name__ == "__main__":
     email_user = os.environ.get('EMAIL_FROM')
     email_pwd = os.environ.get('EMAIL_PWD')
 
+    # 构造html
+    a = '200'
+    html = """\
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+    <body>
+    <div id="container">
+      <div id="content">
+       <table width="500" border="2" bordercolor="red" cellspacing="2">
+      <tr>
+        <td><strong>站点</strong></td>
+      </tr>
+      <tr>
+        <td>node</td>
+        <td>""" + a + """</td>
+      </tr>
+    </table>
+      </div>
+    </div>
+    </div>
+    </body>
+    </html>
+    """
+    from jinja2 import Environment, FileSystemLoader, select_autoescape
+
+    env = Environment(
+        loader=FileSystemLoader('common'),
+    )
+    template = env.get_template('template.html')
+    orders = [{"amount":18,"avg_price":0,"create_date":1520585015000,"deal_amount":0,"order_id":3072019,"orders_id":3072019,"price":0.0023532,"status":0,"symbol":"dpy_eth","type":"sell"},
+              {"amount": 18, "avg_price": 0, "create_date": 1520585015000, "deal_amount": 0, "order_id": 3072019,
+               "orders_id": 3072019, "price": 0.0023532, "status": 0, "symbol": "dpy_eth", "type": "sell"}]
+    html = template.render(orders=orders)
+    print(html)
     email_obj = EmailObj(email_srv, email_user, email_pwd)
-    email_obj.send_mail('test', 'msg body', email_user, email_user, email_user)
+    email_obj.send_mail('test', html, email_user, 'pkguowu@yahoo.com', email_user)
