@@ -33,21 +33,6 @@ def attachment(filename):
     return ret_val
 
 
-def add_table_head(header):
-    msg = '<tr>'
-    for i in header:
-        msg += '<td><strong>%s</strong></td>' % i
-    msg += '</tr>'
-    return msg
-
-
-def append_order(order):
-    msg = ''
-    for i in order:
-        msg += '<td><strong>%s</strong></td>' % i
-    return msg
-
-
 class EmailObj(object):
     def __init__(self, server, user, pwd):
         self.server = server

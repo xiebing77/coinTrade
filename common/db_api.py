@@ -47,11 +47,14 @@ def update_order(order):
 
 
 def get_order(order_id):
-    ret_list = []
     ret = CoinOrder.selectBy(order_id=order_id)
-    for i in ret:
-        ret_list.append(i)
-    return ret_list
+    if len(list(ret)) == 0:
+        return None
+    order = {}
+    order_obj = ret[0]
+    for i in order_obj.sqlmeta.columns.keys():
+        order[i] = eval('order_obj.%s' % i)
+    return order
 
 
 if __name__ == "__main__":
