@@ -6,3 +6,6 @@ location = lambda x: os.path.join(
 
 db_name = location('database/main.db')
 template_dir = location('common')
+email_srv = os.environ.get('EMAIL_SMTP')
+email_user = os.environ.get('EMAIL_FROM')
+email_pwd = os.environ.get('EMAIL_PWD')

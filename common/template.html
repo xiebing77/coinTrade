@@ -3,20 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 15px;
+        text-align: left;
+    }
+    table#t01 {
+        width: 100%;
+        background-color: #f1f1c1;
+    }
+    </style>
 </head>
 
 <body>
-    <table width="10" border="1" bordercolor="black" cellspacing="1">
+    <table id="t01">
+        <caption>Order status</caption>
         <tr>
-        {% for item in orders[0] %}
-            <td>{{ item }}</td>
-        {% endfor %}
+            {% for item in orders[0] %}
+                <th>{{ item }}</th>
+            {% endfor %}
         </tr>
 
         {% for order in orders %}
         <tr>
             {% for item in order %}
                 <td>{{ order[item] }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+
+    <br />
+    <table>
+        <caption>Account status</caption>
+        <tr>
+            {% for item in account %}
+                <th>{{ item }}</th>
+            {% endfor %}
+        </tr>
+
+        <tr>
+            {% for item in account %}
+                <td>{{ account[item] }}</td>
             {% endfor %}
         </tr>
         {% endfor %}

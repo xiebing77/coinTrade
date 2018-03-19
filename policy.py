@@ -6,7 +6,7 @@ from okex.spot_obj import SpotClass as okexSpotClass
 import common.db_api as db_api
 from jinja2 import Environment, FileSystemLoader
 
-from setup import template_dir
+from setup import *
 
 PRICE_GAP = 0.05
 PRICE_RATIO_1 = PRICE_GAP
@@ -79,17 +79,13 @@ def sell_policy(spot_instance, float_digits, coin):
             return
 
 
-def send_report(orders, subject, to_addr, cc_addr=''):
-    email_srv = os.environ.get('EMAIL_SMTP')
-    email_user = os.environ.get('EMAIL_FROM')
-    email_pwd = os.environ.get('EMAIL_PWD')
-
+def send_report(orders, account, subject, to_addr, cc_addr=''):
     # 构造html
     env = Environment(
         loader=FileSystemLoader(template_dir),
     )
     template = env.get_template('template.html')
-    html = template.render(orders=orders)
+    html = template.render(orders=orders, account=account)
     # print(html)
     email_obj = EmailObj(email_srv, email_user, email_pwd)
     email_obj.send_mail(subject, html, email_user, to_addr, cc_addr)
@@ -112,9 +108,12 @@ if __name__ == "__main__":
     """
     order = db_api.get_order('3229114')
     print(order)
+    order['symbol'] = 'gw_eth'
+
+    db_api.update_order(order)
     # for i in order[0]:
     #     print(i)
     # # order[0].symbol = 'btc_eth'
-    orders = [order]
-    send_report(orders, 'test', 'pkguowu@yahoo.com')
+    # orders = [order]
+    # send_report(orders, 'test', 'pkguowu@yahoo.com')
     # insert_order(order)

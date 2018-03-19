@@ -22,8 +22,8 @@ class CoinOrder(SQLObject):
 
 class Account(SQLObject):
     _connection = conn
-    date = StringCol(alternateID=True)
-    coin = StringCol(alternateID=True)
+    date = StringCol()
+    coin = StringCol()
     balance = StringCol()
 
 

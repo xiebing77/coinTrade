@@ -25,28 +25,34 @@ def delete_order(order_id):
     CoinOrder.deleteBy(order_id=order_id)
 
 
-def copy_order(from_order, to_order):
-    to_order.order_id = from_order.order_id
-    to_order.symbol = from_order.symbol
-    to_order.create_date = from_order.create_date
-    to_order.type = from_order.type
-    to_order.price = from_order.price
-    to_order.avg_price = from_order.avg_price
-    to_order.amount = from_order.amount
-    to_order.deal_amount = from_order.deal_amount
-    to_order.status = from_order.status
+def update_obj(from_item, to_obj):
+    for i in from_item:
+        exec('to_obj.%s = from_item["%s"]' % (i, i))
 
 
 def update_order(order):
-    ret = get_order(order.order_id)
-    if len(ret) == 0:
+    org_order = get_order_obj(order['order_id'])
+    if org_order is None:
         insert_order(order)
     else:
-        org_order = ret[0]
-        copy_order(order, org_order)
+        update_obj(order, org_order)
+
+
+def get_order_obj(order_id):
+    """
+    return an CoinOrder obj
+    """
+    ret = CoinOrder.selectBy(order_id=order_id)
+    if len(list(ret)) == 0:
+        return None
+    else:
+        return ret[0]
 
 
 def get_order(order_id):
+    """
+    return a dict
+    """
     ret = CoinOrder.selectBy(order_id=order_id)
     if len(list(ret)) == 0:
         return None
@@ -57,9 +63,24 @@ def get_order(order_id):
     return order
 
 
+def get_account():
+    ret = Account.select()
+    if len(list(ret)) == 0:
+        return None
+
+    accounts = []
+    for account_obj in ret:
+        account = {}
+        for i in account_obj.sqlmeta.columns.keys():
+            account[i] = eval('account_obj.%s' % i)
+        accounts.append(account)
+    return accounts
+
+
 if __name__ == "__main__":
     CoinOrder.createTable(ifNotExists=True)
     Account.createTable(ifNotExists=True)
-    # dpy = Account(date='2018-3-12', coin='dpy', balance='2.222')
+    # dpy = Account(date='2018-3-12', coin='eth', balance='2.222')
     print(os.path.realpath(__file__))
     print(os.path.dirname(os.path.realpath(__file__)))
+    print(get_account())
