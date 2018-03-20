@@ -43,10 +43,10 @@ coin = 'dpy_eth'
 #print (okcoinSpot.cancelOrder(coin,'18243073'))
 
 #print (u' 现货订单信息查询 ')
-#print (okcoinSpot.orderinfo(coin,'18243644'))
+print (okcoinSpot.orderinfo(coin,'-1'))
 
-print (u' 现货批量订单信息查询 ')
-print (okcoinSpot.ordersinfo(coin,'18243800,18243801,18243644','0'))
+# print (u' 现货批量订单信息查询 ')
+# print (okcoinSpot.ordersinfo(coin,'18243800,18243801,18243644','0'))
 
 print (u' 现货历史订单信息查询 ')
 print (okcoinSpot.orderHistory(coin,'1','1','20'))

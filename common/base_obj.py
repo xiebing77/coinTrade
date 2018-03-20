@@ -60,7 +60,7 @@ class BaseObj(object):
         p = float(self.kline[0][2])
         for i in self.kline:
             tmp = float(i[2])
-            date = datetime.utcfromtimestamp(int(i[0])/1000).strftime("%Y-%m-%d %H:%M:%S")
+            date = datetime.fromtimestamp(int(i[0])/1000).strftime("%Y-%m-%d %H:%M:%S")
             self.debug("%s: top price is %s" % (date, tmp))
             if p < tmp:
                 p = tmp
@@ -70,7 +70,7 @@ class BaseObj(object):
         p = float(self.kline[0][3])
         for i in self.kline:
             tmp = float(i[3])
-            date = datetime.utcfromtimestamp(int(i[0])/1000).strftime("%Y-%m-%d %H:%M:%S")
+            date = datetime.fromtimestamp(int(i[0])/1000).strftime("%Y-%m-%d %H:%M:%S")
             self.debug("%s: bottom price is %s" % (date, tmp))
             if p > tmp:
                 p = tmp
@@ -98,3 +98,5 @@ class BaseObj(object):
     def history_orders(self, ):
         pass
 
+    def cancel_orders(self):
+        pass

@@ -8,18 +8,19 @@ from jinja2 import Environment, FileSystemLoader
 
 from setup import *
 
-PRICE_GAP = 0.05
-PRICE_RATIO_1 = PRICE_GAP
-PRICE_RATIO_2 = PRICE_GAP * 2
-PRICE_RATIO_3 = PRICE_GAP * 3
-PRICE_RATIO_4 = PRICE_GAP * 4
+PRICE_GAP = 0.08
 PARTITION_NUM = 4
 MIN_COIN_AMOUNT = 10
 BASE_COIN_RESERVE = 0
-TARGET_COIN_RESERVE = 700
+TARGET_COIN_RESERVE = 0
 
-SELL_BATCH_RATIO = [PRICE_RATIO_1, PRICE_RATIO_2, PRICE_RATIO_3, PRICE_RATIO_4]
-BUY_BATCH_RATIO = [PRICE_RATIO_1, PRICE_RATIO_2, PRICE_RATIO_3, PRICE_RATIO_4]
+SELL_BATCH_RATIO = [PRICE_GAP, PRICE_GAP * 2, PRICE_GAP * 3, PRICE_GAP * 4, PRICE_GAP * 5]
+BUY_BATCH_RATIO = [PRICE_GAP, PRICE_GAP * 2, PRICE_GAP * 3, PRICE_GAP * 4, PRICE_GAP * 5]
+
+
+def run_policy(spot_instance, float_digits, target_coin, base_coin):
+    sell_policy(spot_instance, float_digits, target_coin)
+    buy_policy(spot_instance, float_digits, base_coin)
 
 
 def buy_policy(spot_instance, float_digits, coin):
@@ -79,13 +80,13 @@ def sell_policy(spot_instance, float_digits, coin):
             return
 
 
-def send_report(orders, account, subject, to_addr, cc_addr=''):
+def send_report(orders, accounts, to_addr, subject='Coin Trade Daily Report', cc_addr=''):
     # 构造html
     env = Environment(
         loader=FileSystemLoader(template_dir),
     )
     template = env.get_template('template.html')
-    html = template.render(orders=orders, account=account)
+    html = template.render(orders=orders, accounts=accounts)
     # print(html)
     email_obj = EmailObj(email_srv, email_user, email_pwd)
     email_obj.send_mail(subject, html, email_user, to_addr, cc_addr)
@@ -105,15 +106,23 @@ if __name__ == "__main__":
     # init_database()
     order = okSpot.get_order('3229114')
     print(order)
-    """
     order = db_api.get_order('3229114')
     print(order)
-    order['symbol'] = 'gw_eth'
+    account = db_api.get_account()
+    print(account)
+    # order['symbol'] = 'gw_eth'
 
-    db_api.update_order(order)
+    # db_api.update_order(order)
     # for i in order[0]:
     #     print(i)
     # # order[0].symbol = 'btc_eth'
-    # orders = [order]
-    # send_report(orders, 'test', 'pkguowu@yahoo.com')
+    orders = [order]
+    send_report(orders, account, 'test', 'pkguowu@yahoo.com')
     # insert_order(order)
+    """
+    pair = 'dpy_eth'
+    okSpot = okexSpotClass(pair, '1day', 7, debug=True)
+    # okSpot.cancel_orders()
+    # print(okSpot.get_order('3071976'))
+    orders = db_api.get_pending_orders()
+    print(orders)

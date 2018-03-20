@@ -25,6 +25,18 @@ class SpotClass(BaseObj):
         regular_user = {'free': user['info']['funds']['free'], 'frozen': user['info']['funds']['freezed']}
         return regular_user
 
+    def get_available_coins(self):
+        free = self.account['free']
+        frozen = self.account['frozen']
+        coins = []
+        for coin in free:
+            free_coin = float(free[coin])
+            frozen_coin = float(frozen[coin])
+            balance = free_coin + frozen_coin
+            if balance:
+                coins.append({'coin': coin, 'free': free_coin, 'frozen': frozen_coin, 'balance': balance})
+        return coins
+
     def get_order(self, order_id):
         ret = json.loads(self.spot.orderinfo(self.symbol, order_id))['orders']
         if not ret:
@@ -44,12 +56,13 @@ class SpotClass(BaseObj):
         else:
             order['status'] = 'Error'
 
-        order['create_date'] = datetime.utcfromtimestamp(order['create_date']/1000).strftime("%Y-%m-%d %H:%M:%S")
+        order['timestamp'] = order['create_date']/1000
+        order['create_date'] = datetime.fromtimestamp(order['create_date']/1000).strftime("%Y-%m-%d %H:%M:%S")
         order['order_id'] = str(order['order_id'])
-        order['amount'] = str(order['amount'])
-        order['avg_price'] = str(order['avg_price'])
-        order['deal_amount'] = str(order['deal_amount'])
-        order['price'] = str(order['price'])
+        order['amount'] = order['amount']
+        order['avg_price'] = order['avg_price']
+        order['deal_amount'] = order['deal_amount']
+        order['price'] = order['price']
         return order
 
     def buy(self, price, amount):
@@ -72,8 +85,8 @@ class SpotClass(BaseObj):
             self.debug('Place order failed')
             return None
 
+    def cancel_orders(self):
+        orders = json.loads(self.spot.orderinfo(self.symbol, '-1'))['orders']
+        for order in orders:
+            self.spot.cancelOrder(self.symbol, order['order_id'])
 
-if __name__ == "__main__":
-    coin = 'dpy_eth'
-    okSpot = SpotClass(coin, '1day', 7)
-    print(okSpot.account)

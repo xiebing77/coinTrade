@@ -13,18 +13,20 @@ class CoinOrder(SQLObject):
     symbol = StringCol()
     create_date = StringCol()
     type = StringCol()
-    price = StringCol()
-    avg_price = StringCol()
-    amount = StringCol()
-    deal_amount = StringCol()
+    price = FloatCol()
+    avg_price = FloatCol()
+    amount = FloatCol()
+    deal_amount = FloatCol()
     status = StringCol()
+    timestamp = IntCol()
 
 
 class Account(SQLObject):
     _connection = conn
+    timestamp = IntCol()
     date = StringCol()
     coin = StringCol()
-    balance = StringCol()
+    balance = FloatCol()
 
 
 if __name__ == "__main__":

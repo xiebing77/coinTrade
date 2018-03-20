@@ -38,14 +38,15 @@
     </table>
 
     <br />
-    <table>
+    <table id="t01">
         <caption>Account status</caption>
         <tr>
-            {% for item in account %}
+            {% for item in accounts[0] %}
                 <th>{{ item }}</th>
             {% endfor %}
         </tr>
 
+        {% for account in accounts %}
         <tr>
             {% for item in account %}
                 <td>{{ account[item] }}</td>
