@@ -37,6 +37,9 @@ class BaseObj(object):
         self.medium_price = self.get_medium_price()
         self.current_price = self.get_current_price()
 
+    def update_account(self):
+        self.account = self.get_account()
+
     def get_kline(self):
         """
         :return:

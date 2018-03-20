@@ -93,36 +93,32 @@ def send_report(orders, accounts, to_addr, subject='Coin Trade Daily Report', cc
 
 
 if __name__ == "__main__":
-    """
     pair = 'dpy_eth'
     target_coin = 'dpy'
     base_coin = 'eth'
     # create a new instance
     okSpot = okexSpotClass(pair, '1day', 7, debug=True)
-    # sell_policy(okSpot, 8, target_coin)
+    sell_policy(okSpot, 8, target_coin)
     # buy_policy(okSpot, 8, base_coin)
     # print(okSpot.balance('dpy'))
     # print(okSpot.balance('eth'))
     # init_database()
-    order = okSpot.get_order('3229114')
-    print(order)
-    order = db_api.get_order('3229114')
-    print(order)
-    account = db_api.get_account()
-    print(account)
+    # order = okSpot.get_order('3229114')
+    # print(order)
+    # order = db_api.get_order('3229114')
+    # print(order)
+    # account = db_api.get_account()
+    # print(account)
     # order['symbol'] = 'gw_eth'
 
     # db_api.update_order(order)
     # for i in order[0]:
     #     print(i)
     # # order[0].symbol = 'btc_eth'
-    orders = [order]
-    send_report(orders, account, 'test', 'pkguowu@yahoo.com')
+    # orders = [order]
+    # send_report(orders, account, 'test', 'pkguowu@yahoo.com')
     # insert_order(order)
-    """
-    pair = 'dpy_eth'
-    okSpot = okexSpotClass(pair, '1day', 7, debug=True)
     # okSpot.cancel_orders()
     # print(okSpot.get_order('3071976'))
-    orders = db_api.get_pending_orders()
-    print(orders)
+    # orders = db_api.get_pending_orders()
+    # print(orders)

@@ -14,6 +14,7 @@ if __name__ == "__main__":
     # cancel all unfinished orders
     print('Cancel all orders')
     ok_spot.cancel_orders()
+    ok_spot.update_account()
 
     # update pending orders in database
     print('Update pending orders')
