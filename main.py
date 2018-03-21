@@ -28,7 +28,7 @@ if __name__ == "__main__":
     print('Send new orders')
     run_policy(ok_spot, float_digits=8, target_coin=target_coin, base_coin=base_coin)
 
-    # update account in database
+    # insert new account snapshot in database
     print('Update account')
     for i in ok_spot.get_available_coins():
         db_api.insert_account(i)
