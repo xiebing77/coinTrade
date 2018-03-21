@@ -2,7 +2,7 @@
 import os
 
 from common.email_obj import EmailObj
-from okex.spot_obj import SpotClass as okexSpotClass
+from okex.spot_obj import RmtSrvObj as okexSpotClass
 import common.db_api as db_api
 from jinja2 import Environment, FileSystemLoader
 

@@ -12,16 +12,16 @@ rest_url = 'www.okex.com'
 # rest_url = '104.25.20.25'
 
 
-class SpotClass(BaseObj):
+class RmtSrvObj(BaseObj):
     def __init__(self, symbol, line_type, size=0, since='', debug=False):
-        self.spot = OKCoinSpot(rest_url, api_key, secret_key)
-        super(SpotClass, self).__init__(symbol, line_type, size, since, debug)
+        self.rmt_srv_obj = OKCoinSpot(rest_url, api_key, secret_key)
+        super(RmtSrvObj, self).__init__(symbol, line_type, size, since, debug)
 
     def get_kline(self):
-        return self.spot.get_kline(self.symbol, self.type, self.size, self.since)
+        return self.rmt_srv_obj.get_kline(self.symbol, self.type, self.size, self.since)
 
     def get_account(self):
-        user = json.loads(self.spot.userinfo())
+        user = json.loads(self.rmt_srv_obj.userinfo())
         regular_user = {'free': user['info']['funds']['free'], 'frozen': user['info']['funds']['freezed']}
         return regular_user
 
@@ -38,7 +38,7 @@ class SpotClass(BaseObj):
         return coins
 
     def get_order(self, order_id):
-        ret = json.loads(self.spot.orderinfo(self.symbol, order_id))['orders']
+        ret = json.loads(self.rmt_srv_obj.orderinfo(self.symbol, order_id))['orders']
         if not ret:
             return None
 
@@ -67,7 +67,7 @@ class SpotClass(BaseObj):
 
     def buy(self, price, amount):
         self.debug('Buy order: pair(%s), price(%s), amount(%s)' % (self.symbol, price, amount))
-        ret = json.loads(self.spot.trade(self.symbol, 'buy', price=str(price), amount=str(amount)))
+        ret = json.loads(self.rmt_srv_obj.trade(self.symbol, 'buy', price=str(price), amount=str(amount)))
         if ret['result']:
             self.debug('Return buy order ID: %s' % ret['order_id'])
             return ret['order_id']
@@ -77,7 +77,7 @@ class SpotClass(BaseObj):
 
     def sell(self, price, amount):
         self.debug('Sell order: pair(%s), price(%s), amount(%s)' % (self.symbol, price, amount))
-        ret = json.loads(self.spot.trade(self.symbol, 'sell', price=str(price), amount=str(amount)))
+        ret = json.loads(self.rmt_srv_obj.trade(self.symbol, 'sell', price=str(price), amount=str(amount)))
         if ret['result']:
             self.debug('Return sell order ID: %s' % ret['order_id'])
             return ret['order_id']
@@ -86,7 +86,7 @@ class SpotClass(BaseObj):
             return None
 
     def cancel_orders(self):
-        orders = json.loads(self.spot.orderinfo(self.symbol, '-1'))['orders']
+        orders = json.loads(self.rmt_srv_obj.orderinfo(self.symbol, '-1'))['orders']
         for order in orders:
-            self.spot.cancelOrder(self.symbol, order['order_id'])
+            self.rmt_srv_obj.cancelOrder(self.symbol, order['order_id'])
 

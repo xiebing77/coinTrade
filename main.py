@@ -9,7 +9,7 @@ if __name__ == "__main__":
     pair = 'dpy_eth'
     target_coin = 'dpy'
     base_coin = 'eth'
-    ok_spot = spot_obj.SpotClass(pair, '1day', 7, debug=True)
+    ok_spot = spot_obj.RmtSrvObj(pair, '1day', 7, debug=True)
 
     # cancel all unfinished orders
     print('Cancel all orders')
@@ -35,7 +35,8 @@ if __name__ == "__main__":
 
     # send report
     print('Send report')
-    end_time = datetime.datetime.now()
+    # local time is a little different from server time
+    end_time = datetime.datetime.now() + datetime.timedelta(hours=1)
     begin_time = end_time - datetime.timedelta(days=3)
     orders = db_api.get_orders_by_time(begin_time.timestamp(), end_time.timestamp())
     accounts = db_api.get_accounts_by_time(begin_time.timestamp(), end_time.timestamp())
