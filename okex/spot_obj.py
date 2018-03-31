@@ -68,7 +68,7 @@ class RmtSrvObj(BaseObj):
     def buy(self, price, amount):
         self.debug('Buy order: pair(%s), price(%s), amount(%s)' % (self.symbol, price, amount))
         ret = json.loads(self.rmt_srv_obj.trade(self.symbol, 'buy', price=str(price), amount=str(amount)))
-        print(ret)
+        self.debug(ret)
         try:
             if ret['result']:
                 self.debug('Return buy order ID: %s' % ret['order_id'])
@@ -83,11 +83,16 @@ class RmtSrvObj(BaseObj):
     def sell(self, price, amount):
         self.debug('Sell order: pair(%s), price(%s), amount(%s)' % (self.symbol, price, amount))
         ret = json.loads(self.rmt_srv_obj.trade(self.symbol, 'sell', price=str(price), amount=str(amount)))
-        if ret['result']:
-            self.debug('Return sell order ID: %s' % ret['order_id'])
-            return ret['order_id']
-        else:
-            self.debug('Place order failed')
+        self.debug(ret)
+        try:
+            if ret['result']:
+                self.debug('Return sell order ID: %s' % ret['order_id'])
+                return ret['order_id']
+            else:
+                self.debug('Place order failed')
+                return None
+        except Exception:
+            self.debug('Error result: %s' % ret)
             return None
 
     def cancel_orders(self):
