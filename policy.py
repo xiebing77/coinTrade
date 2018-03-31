@@ -8,14 +8,14 @@ from jinja2 import Environment, FileSystemLoader
 
 from setup import *
 
-PRICE_GAP = 0.08
+PRICE_GAP = 0.05
 PARTITION_NUM = 4
 MIN_COIN_AMOUNT = 10
 BASE_COIN_RESERVE = 0
 TARGET_COIN_RESERVE = 0
 
-SELL_BATCH_RATIO = [PRICE_GAP, PRICE_GAP * 2, PRICE_GAP * 3, PRICE_GAP * 4, PRICE_GAP * 5]
-BUY_BATCH_RATIO = [PRICE_GAP, PRICE_GAP * 2, PRICE_GAP * 3, PRICE_GAP * 4, PRICE_GAP * 5]
+SELL_BATCH_RATIO = [PRICE_GAP, PRICE_GAP * 2, PRICE_GAP * 4, PRICE_GAP * 5, PRICE_GAP * 6]
+BUY_BATCH_RATIO = [PRICE_GAP, PRICE_GAP * 2, PRICE_GAP * 4, PRICE_GAP * 5, PRICE_GAP * 6]
 
 
 def run_policy(spot_instance, float_digits, target_coin, base_coin):
