@@ -21,6 +21,24 @@
 
 <body>
     <table id="t01">
+        <caption>Account status</caption>
+        <tr>
+            {% for item in accounts[0] %}
+                <th>{{ item }}</th>
+            {% endfor %}
+        </tr>
+
+        {% for account in accounts %}
+        <tr>
+            {% for item in account %}
+                <td>{{ account[item] }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+    <br />
+    
+    <table id="t01">
         <caption>Order status</caption>
         <tr>
             {% for item in orders[0] %}
@@ -37,22 +55,5 @@
         {% endfor %}
     </table>
 
-    <br />
-    <table id="t01">
-        <caption>Account status</caption>
-        <tr>
-            {% for item in accounts[0] %}
-                <th>{{ item }}</th>
-            {% endfor %}
-        </tr>
-
-        {% for account in accounts %}
-        <tr>
-            {% for item in account %}
-                <td>{{ account[item] }}</td>
-            {% endfor %}
-        </tr>
-        {% endfor %}
-    </table>
 </body>
 </html>
