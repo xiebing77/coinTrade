@@ -18,6 +18,12 @@ SELL_BATCH_RATIO = [PRICE_GAP, PRICE_GAP * 2, PRICE_GAP * 3]
 BUY_BATCH_RATIO = [PRICE_GAP, PRICE_GAP * 2, PRICE_GAP * 3]
 
 
+def reserve_float(value, float_digits=0):
+    value_str = str(value)
+    value_list = value_str.split('.')
+    new_value_str = '.'.join([value_list[0], value_list[1][0:float_digits]])
+    return float(new_value_str)
+
 def run_policy(spot_instance, float_digits, target_coin, base_coin):
     sell_policy(spot_instance, float_digits, target_coin)
     buy_policy(spot_instance, float_digits, base_coin)
@@ -35,19 +41,18 @@ def buy_policy(spot_instance, float_digits, coin):
     print('Current price: %s' % current_price)
 
     total = float(spot_instance.balance(coin)['free']) - BASE_COIN_RESERVE
-    rest = total
+    if total/base_price < MIN_COIN_AMOUNT:
+        return
+    base_amount = reserve_float(total/len(BUY_BATCH_RATIO), float_digits)
 
     for i in BUY_BATCH_RATIO:
-        price = round(base_price * (1 - i), float_digits)
-        if rest < MIN_COIN_AMOUNT * price:
-            return
-        amount = round(max(round(total/(len(BUY_BATCH_RATIO) * price)), MIN_COIN_AMOUNT))
-        order_id = spot_instance.buy(price, round(min(rest/price, amount)))
+        price = reserve_float(base_price * (1 - i), float_digits)
+        amount = reserve_float(base_amount/price)
+        order_id = spot_instance.buy(price, amount)
         if order_id is None:
             continue
         # insert new order into database
         db_api.insert_order(spot_instance.get_order(order_id))
-        rest -= amount * price
     return
 
 
@@ -67,10 +72,10 @@ def sell_policy(spot_instance, float_digits, coin):
 
     if rest < MIN_COIN_AMOUNT:
         return
-    amount = round(max(round(total/len(SELL_BATCH_RATIO), float_digits), MIN_COIN_AMOUNT))
+    amount = reserve_float(max(reserve_float(total/len(SELL_BATCH_RATIO), float_digits), MIN_COIN_AMOUNT))
     for i in SELL_BATCH_RATIO:
-        price = round(base_price * (1 + i), float_digits)
-        order_id = spot_instance.sell(price, round(min(rest, amount)))
+        price = reserve_float(base_price * (1 + i), float_digits)
+        order_id = spot_instance.sell(price, reserve_float(min(rest, amount)))
         if order_id is None:
             continue
         # insert new order into database
@@ -81,7 +86,7 @@ def sell_policy(spot_instance, float_digits, coin):
 
 
 def send_report(orders, accounts, to_addr, subject='Coin Trade Daily Report', cc_addr=''):
-    # 构造html
+    # construct html
     env = Environment(
         loader=FileSystemLoader(template_dir),
     )
