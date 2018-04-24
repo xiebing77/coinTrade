@@ -4,6 +4,8 @@ from setup import *
 import okex.spot_obj as spot_obj
 from common import db_api
 from policy import run_policy, send_report
+from conf import FLOAT_DIGITS
+
 
 if __name__ == "__main__":
     pair = 'dpy_eth'
@@ -26,7 +28,7 @@ if __name__ == "__main__":
 
     # re-order
     print('Send new orders')
-    run_policy(ok_spot, float_digits=8, target_coin=target_coin, base_coin=base_coin)
+    run_policy(ok_spot, float_digits=FLOAT_DIGITS, target_coin=target_coin, base_coin=base_coin)
 
     # insert new account snapshot in database
     print('Update account')

@@ -2,6 +2,7 @@
 import os
 
 from common.email_obj import EmailObj
+from common.lib import reserve_float
 from okex.spot_obj import RmtSrvObj as okexSpotClass
 import common.db_api as db_api
 from jinja2 import Environment, FileSystemLoader
@@ -17,12 +18,6 @@ TARGET_COIN_RESERVE = 0
 SELL_BATCH_RATIO = [PRICE_GAP, PRICE_GAP * 2, PRICE_GAP * 3]
 BUY_BATCH_RATIO = [PRICE_GAP, PRICE_GAP * 2, PRICE_GAP * 3]
 
-
-def reserve_float(value, float_digits=0):
-    value_str = str(value)
-    value_list = value_str.split('.')
-    new_value_str = '.'.join([value_list[0], value_list[1][0:float_digits]])
-    return float(new_value_str)
 
 def run_policy(spot_instance, float_digits, target_coin, base_coin):
     sell_policy(spot_instance, float_digits, target_coin)
