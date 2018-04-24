@@ -3,7 +3,7 @@ import datetime
 from setup import *
 import okex.spot_obj as spot_obj
 from common import db_api
-from policy import run_policy, send_report
+from policy import send_report
 from common.lib import reserve_float
 from conf import FLOAT_DIGITS
 
