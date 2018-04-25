@@ -59,24 +59,50 @@ class BaseObj(object):
         if self.debug_flag is True:
             print(string)
 
+    # def get_top_price(self):
+    #     p = float(self.kline[0][2])
+    #     for i in self.kline:
+    #         tmp = float(i[2])
+    #         date = datetime.fromtimestamp(int(i[0])/1000).strftime("%Y-%m-%d %H:%M:%S")
+    #         self.debug("%s: top price is %s" % (date, tmp))
+    #         if p < tmp:
+    #             p = tmp
+    #     return p
+    #
+    # def get_bottom_price(self):
+    #     p = float(self.kline[0][3])
+    #     for i in self.kline:
+    #         tmp = float(i[3])
+    #         date = datetime.fromtimestamp(int(i[0])/1000).strftime("%Y-%m-%d %H:%M:%S")
+    #         self.debug("%s: bottom price is %s" % (date, tmp))
+    #         if p > tmp:
+    #             p = tmp
+    #     return p
+
+    # get top close price
     def get_top_price(self):
-        p = float(self.kline[0][2])
+        pos = self.kline[0]
+        p = float(pos[4])
         for i in self.kline:
-            tmp = float(i[2])
-            date = datetime.fromtimestamp(int(i[0])/1000).strftime("%Y-%m-%d %H:%M:%S")
-            self.debug("%s: top price is %s" % (date, tmp))
+            tmp = float(i[4])
             if p < tmp:
                 p = tmp
+                pos = i
+        date = datetime.fromtimestamp(int(pos[0]) / 1000).strftime("%Y-%m-%d %H:%M:%S")
+        self.debug("%s: top price is %s" % (date, p))
         return p
 
+    # get bottom close price
     def get_bottom_price(self):
-        p = float(self.kline[0][3])
+        pos = self.kline[0]
+        p = float(pos[4])
         for i in self.kline:
-            tmp = float(i[3])
-            date = datetime.fromtimestamp(int(i[0])/1000).strftime("%Y-%m-%d %H:%M:%S")
-            self.debug("%s: bottom price is %s" % (date, tmp))
+            tmp = float(i[4])
             if p > tmp:
                 p = tmp
+                pos = i
+        date = datetime.fromtimestamp(int(pos[0]) / 1000).strftime("%Y-%m-%d %H:%M:%S")
+        self.debug("%s: bottom price is %s" % (date, p))
         return p
 
     def get_medium_price(self):
