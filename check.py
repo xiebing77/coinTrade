@@ -40,11 +40,15 @@ if __name__ == "__main__":
                                                                           order['deal_amount']))
             if order['type'] == 'buy':
                 price = reserve_float(order['avg_price'] * (1 + PROFIT_RATIO), FLOAT_DIGITS)
-                ok_spot.sell(price, amount)
+                order_id = ok_spot.sell(price, amount)
             else:
                 price = reserve_float(order['avg_price'] * (1 - PROFIT_RATIO), FLOAT_DIGITS)
                 new_amount = reserve_float(order['avg_price'] * amount / price)
-                ok_spot.buy(price, new_amount)
+                order_id = ok_spot.buy(price, new_amount)
+
+            if order_id is not None:
+                # insert new order into database
+                db_api.insert_order(ok_spot.get_order(order_id))
 
     # insert new account snapshot in database
     if update_flag:
