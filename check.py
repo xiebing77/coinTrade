@@ -8,6 +8,7 @@ from common.lib import reserve_float
 from conf import FLOAT_DIGITS
 
 PROFIT_RATIO = 0.1
+FEE_RATIO = 0.002
 
 if __name__ == "__main__":
     pair = 'dpy_eth'
@@ -21,14 +22,22 @@ if __name__ == "__main__":
     orders = db_api.get_pending_orders()
     for item in orders:
         order = ok_spot.get_order(item['order_id'])
-        if order is not None and (order['status'] == 'Dealt' or order['status'] == 'Part dealt'):
+        # print(item['order_id'])
+        # order['status'] = 'Dealt'
+        # order['deal_amount'] = item['amount']
+        # order['avg_price'] = order['price']
+        if order is not None and order['status'] == 'Dealt':
+            print(order)
+            amount = reserve_float(order['deal_amount'] * (1 - FEE_RATIO))
+            # print(amount)
             db_api.update_order(order)
-            amount = order['deal_amount']
+            if amount < 10:
+                continue
             update_flag = True
             print('%s order is dealt: pair(%s), price(%s), amount(%s)' % (order['type'], pair, order['avg_price'],
-                                                                          amount))
+                                                                          order['deal_amount']))
             if order['type'] == 'buy':
-                price = reserve_float(order['avg_price'] * PROFIT_RATIO, FLOAT_DIGITS)
+                price = reserve_float(order['avg_price'] * (1 + PROFIT_RATIO), FLOAT_DIGITS)
                 ok_spot.sell(price, amount)
             else:
                 price = reserve_float(order['avg_price'] * (1 - PROFIT_RATIO), FLOAT_DIGITS)
@@ -37,12 +46,12 @@ if __name__ == "__main__":
 
     # insert new account snapshot in database
     if update_flag:
-        print('Update account')
+        print('Updating account...')
         for i in ok_spot.get_available_coins():
             db_api.insert_account(i)
 
         # send report
-        print('Send report')
+        print('Sending report...')
         # local time is a little different from server time
         end_time = datetime.datetime.now() + datetime.timedelta(hours=1)
         begin_time = end_time - datetime.timedelta(days=3)
