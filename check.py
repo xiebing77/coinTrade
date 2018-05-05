@@ -27,8 +27,10 @@ if __name__ == "__main__":
         # order['deal_amount'] = item['amount']
         # order['avg_price'] = order['price']
         if order is None:
-            print("Not find order from exchanger, need to delete it in database: " + item)
+            print("Not find order from exchanger, need to delete it in database: ")
+            print(item)
         elif order['status'] == 'Dealt':
+            print("\n the order is done:")
             print(order)
             amount = reserve_float(order['deal_amount'] * (1 - FEE_RATIO))
             # print(amount)
