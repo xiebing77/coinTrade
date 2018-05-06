@@ -1,5 +1,7 @@
 #!/usr/bin/python
 import datetime
+import argparse
+
 from setup import *
 import okex.spot_obj as spot_obj
 from common import db_api
@@ -8,9 +10,21 @@ from conf import FLOAT_DIGITS
 
 
 if __name__ == "__main__":
-    pair = 'dpy_eth'
-    target_coin = 'dpy'
-    base_coin = 'eth'
+    # pair = 'dpy_eth'
+    # target_coin = 'dpy'
+    # base_coin = 'eth'
+
+    parser = argparse.ArgumentParser(description='coin trade')
+    parser.add_argument('-b', help='base coin')
+    parser.add_argument('-t', help='target coin')
+
+    args = parser.parse_args()
+    # print(args)
+    base_coin = args.b
+    target_coin = args.t
+
+    pair = '%s_%s' % (target_coin, base_coin)
+    print("The pair is %s " % pair)
     ok_spot = spot_obj.RmtSrvObj(pair, '1day', 7, debug=True)
 
     # cancel all unfinished orders
