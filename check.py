@@ -29,6 +29,7 @@ if __name__ == "__main__":
         if order is None:
             print("Not find order from exchanger, need to delete it in database: ")
             print(item)
+            db_api.delete_order(item['order_id'])
         elif order['status'] == 'Dealt':
             print("\n the order is done:")
             print(order)
