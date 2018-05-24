@@ -66,4 +66,7 @@ if __name__ == "__main__":
         begin_time = end_time - datetime.timedelta(days=3)
         orders = db_api.get_orders_by_time(begin_time.timestamp(), end_time.timestamp())
         accounts = db_api.get_accounts_by_time(begin_time.timestamp(), end_time.timestamp())
+        for i in accounts:
+            if i['balance'] < 0.001:
+                accounts.remove(i)
         send_report(orders, accounts, email_receiver)
