@@ -23,6 +23,9 @@ if __name__ == "__main__":
     base_coin = args.b
     target_coin = args.t
 
+    present = datetime.datetime.now()
+    print('\n%s Check if any order is dealt' % present)
+
     pair = '%s%s' % (target_coin.upper(), base_coin.upper())
     print("The pair is %s " % pair)
     rmt_srv = spot_obj.RmtSrvObj(pair, KLINE_INTERVAL_1DAY, 7, debug=True)
