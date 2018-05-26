@@ -7,18 +7,21 @@ from policy import send_report
 from common.lib import reserve_float
 from conf import FLOAT_DIGITS
 
-PROFIT_RATIO = 0.1
+PROFIT_RATIO = 0.08
 FEE_RATIO = 0.002
 
 if __name__ == "__main__":
     pair = 'dpy_eth'
     target_coin = 'dpy'
     base_coin = 'eth'
+
+    present = datetime.datetime.now()
+    print('\n%s Check if any order is dealt' % present)
+
     ok_spot = spot_obj.RmtSrvObj(pair, '1day', 7, debug=True)
     update_flag = False
 
     # check if any order is dealt
-    print('Check if any order is dealt')
     orders = db_api.get_pending_orders()
     for item in orders:
         order = ok_spot.get_order(item['order_id'])
