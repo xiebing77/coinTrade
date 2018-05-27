@@ -5,13 +5,13 @@ import datetime
 from binance.enums import KLINE_INTERVAL_1DAY
 from setup import *
 from binance.rmt_srv import RmtSrvObj
-from common import db_api
-from policy import send_report
-from common.lib import reserve_float
-from conf import FLOAT_DIGITS
+from common.lib import reserve_float, send_report
+from mongo.db_api import DbApi
 
 PROFIT_RATIO = 0.07
 FEE_RATIO = 0.002
+target_amount_digits = 3
+price_digits = 2
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='coin trade')
@@ -31,6 +31,10 @@ if __name__ == "__main__":
     rmt_srv = RmtSrvObj(pair, KLINE_INTERVAL_1DAY, 7, debug=True)
     update_flag = False
 
+    db_url = "mongodb://localhost:27017/"
+    db_name = "binance"
+    db_api = DbApi(db_url, db_name)
+
     # check if any order is dealt
     print('Check if any order is dealt')
     orders = db_api.get_pending_orders()
@@ -47,20 +51,18 @@ if __name__ == "__main__":
         elif order['status'] == 'Dealt':
             print("\n the order is done:")
             print(order)
-            amount = reserve_float(order['deal_amount'] * (1 - FEE_RATIO))
+            amount = reserve_float(float(order['deal_amount']) * (1 - FEE_RATIO), target_amount_digits)
             # print(amount)
             db_api.update_order(order)
-            if amount < 10:
-                continue
             update_flag = True
             print('%s order is dealt: pair(%s), price(%s), amount(%s)' % (order['type'], pair, order['avg_price'],
                                                                           order['deal_amount']))
             if order['type'] == 'buy':
-                price = reserve_float(order['avg_price'] * (1 + PROFIT_RATIO), FLOAT_DIGITS)
+                price = reserve_float(float(order['avg_price']) * (1 + PROFIT_RATIO), price_digits)
                 order_id = rmt_srv.sell(price, amount)
             else:
-                price = reserve_float(order['avg_price'] * (1 - PROFIT_RATIO), FLOAT_DIGITS)
-                new_amount = reserve_float(order['avg_price'] * amount / price)
+                price = reserve_float(float(order['avg_price']) * (1 - PROFIT_RATIO), price_digits)
+                new_amount = reserve_float(float(order['avg_price']) * amount / price, target_amount_digits)
                 order_id = rmt_srv.buy(price, new_amount)
 
             if order_id is not None:
@@ -80,4 +82,4 @@ if __name__ == "__main__":
         begin_time = end_time - datetime.timedelta(days=3)
         orders = db_api.get_orders_by_time(begin_time.timestamp(), end_time.timestamp())
         accounts = db_api.get_accounts_by_time(begin_time.timestamp(), end_time.timestamp())
-        send_report(orders, accounts, email_receiver)
+        send_report(orders, accounts, email_receiver, subject='Coin Trade Daily Report - binance')

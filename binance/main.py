@@ -22,6 +22,9 @@ if __name__ == "__main__":
     target_coin = args.t.upper()
     # float_digits = args.f
 
+    present = datetime.datetime.now()
+    print('\n%s Main start...' % present)
+
     pair = '%s%s' % (target_coin, base_coin)
     print("The pair is %s " % pair)
     rmt_srv = RmtSrvObj(pair, KLINE_INTERVAL_1DAY, 7, debug=True)
@@ -66,4 +69,4 @@ if __name__ == "__main__":
     for i in accounts:
         if i['balance'] < 0.001:
             accounts.remove(i)
-    send_report(orders, accounts, email_receiver)
+    send_report(orders, accounts, email_receiver, subject='Coin Trade Daily Report - binance')
