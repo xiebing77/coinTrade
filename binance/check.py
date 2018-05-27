@@ -36,7 +36,6 @@ if __name__ == "__main__":
     db_api = DbApi(db_url, db_name)
 
     # check if any order is dealt
-    print('Check if any order is dealt')
     orders = db_api.get_pending_orders()
     for item in orders:
         order = rmt_srv.get_order(item['order_id'])
