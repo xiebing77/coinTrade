@@ -1,22 +1,24 @@
 #!/usr/bin/python
 import os
 
+from binance.rmt_srv import RmtSrvObj
 from common.email_obj import EmailObj
 from common.lib import reserve_float
-from okex.spot_obj import RmtSrvObj as okexSpotClass
-import common.db_api as db_api
+from mongo.db_api import DbApi
 from jinja2 import Environment, FileSystemLoader
 
 from setup import *
 
-PRICE_GAP = 0.07
+PRICE_GAP = 0.04
 PARTITION_NUM = 4
 MIN_COIN_AMOUNT = 10
-BASE_COIN_RESERVE = 1
+BASE_COIN_RESERVE = 0
 TARGET_COIN_RESERVE = 0
 
-SELL_BATCH_RATIO = [PRICE_GAP, PRICE_GAP * 2, PRICE_GAP * 3]
-BUY_BATCH_RATIO = [PRICE_GAP, PRICE_GAP * 2, PRICE_GAP * 3]
+SELL_BATCH_RATIO = [PRICE_GAP, PRICE_GAP * 2, PRICE_GAP * 3, PRICE_GAP * 4, PRICE_GAP * 5, PRICE_GAP * 6, PRICE_GAP * 7, PRICE_GAP * 8]
+BUY_BATCH_RATIO = [PRICE_GAP, PRICE_GAP * 2, PRICE_GAP * 3, PRICE_GAP * 4, PRICE_GAP * 5, PRICE_GAP * 6, PRICE_GAP * 7, PRICE_GAP * 8]
+
+db_api = DbApi("mongodb://localhost:27017/", 'binance')
 
 
 def run_policy(spot_instance, float_digits, target_coin, base_coin):
@@ -93,12 +95,12 @@ def send_report(orders, accounts, to_addr, subject='Coin Trade Daily Report', cc
 
 
 if __name__ == "__main__":
-    pair = 'dpy_eth'
-    target_coin = 'dpy'
-    base_coin = 'eth'
+    pair = 'ETHUSDT'
+    target_coin = 'ETH'
+    base_coin = 'USDT'
     # create a new instance
-    okSpot = okexSpotClass(pair, '1day', 7, debug=True)
-    sell_policy(okSpot, 8, target_coin)
+    rmt_srv = RmtSrvObj(pair, '1day', 7, debug=True)
+    sell_policy(rmt_srv, 8, target_coin)
     # buy_policy(okSpot, 8, base_coin)
     # print(okSpot.balance('dpy'))
     # print(okSpot.balance('eth'))

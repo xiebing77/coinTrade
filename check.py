@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import datetime
 from setup import *
-import okex.spot_obj as spot_obj
+import okex.rmt_srv as spot_obj
 from common import db_api
 from policy import send_report
 from common.lib import reserve_float

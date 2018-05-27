@@ -4,10 +4,9 @@ import argparse
 
 from binance.enums import KLINE_INTERVAL_1DAY
 from setup import *
-import okex.spot_obj as spot_obj
+import binance.rmt_srv as spot_obj
 from common import db_api
-from policy import run_policy, send_report
-from conf import FLOAT_DIGITS
+from binance.policy import run_policy, send_report
 
 
 if __name__ == "__main__":
@@ -18,11 +17,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='coin trade')
     parser.add_argument('-b', help='base coin')
     parser.add_argument('-t', help='target coin')
+    parser.add_argument('-f', help='float digits')
 
     args = parser.parse_args()
     # print(args)
     base_coin = args.b
     target_coin = args.t
+    float_digits = args.f
 
     pair = '%s%s' % (target_coin.upper(), base_coin.upper())
     print("The pair is %s " % pair)
@@ -43,7 +44,7 @@ if __name__ == "__main__":
 
     # re-order
     print('Send new orders')
-    run_policy(rmt_srv, float_digits=FLOAT_DIGITS, target_coin=target_coin, base_coin=base_coin)
+    run_policy(rmt_srv, float_digits=float_digits, target_coin=target_coin, base_coin=base_coin)
 
     # insert new account snapshot in database
     print('Update account')

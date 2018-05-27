@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from binance.enums import *
-from binance.spot_obj import RmtSrvObj
+from binance.rmt_srv import RmtSrvObj
 
 if __name__ == "__main__":
     pair = 'ETHUSDT'
