@@ -3,31 +3,32 @@ import datetime
 import argparse
 
 from binance.enums import KLINE_INTERVAL_1DAY
+from binance.rmt_srv import RmtSrvObj
+from mongo.db_api import DbApi
+from common.lib import send_report
 from setup import *
-import binance.rmt_srv as spot_obj
-from common import db_api
-from binance.policy import run_policy, send_report
+from binance.policy import Policy
 
 
 if __name__ == "__main__":
-    # pair = 'dpy_eth'
-    # target_coin = 'dpy'
-    # base_coin = 'eth'
-
     parser = argparse.ArgumentParser(description='coin trade')
     parser.add_argument('-b', help='base coin')
     parser.add_argument('-t', help='target coin')
-    parser.add_argument('-f', help='float digits')
+    # parser.add_argument('-f', help='float digits')
 
     args = parser.parse_args()
     # print(args)
-    base_coin = args.b
-    target_coin = args.t
-    float_digits = args.f
+    base_coin = args.b.upper()
+    target_coin = args.t.upper()
+    # float_digits = args.f
 
-    pair = '%s%s' % (target_coin.upper(), base_coin.upper())
+    pair = '%s%s' % (target_coin, base_coin)
     print("The pair is %s " % pair)
-    rmt_srv = spot_obj.RmtSrvObj(pair, KLINE_INTERVAL_1DAY, 7, debug=True)
+    rmt_srv = RmtSrvObj(pair, KLINE_INTERVAL_1DAY, 7, debug=True)
+
+    db_url = "mongodb://localhost:27017/"
+    db_name = "binance"
+    db_api = DbApi(db_url, db_name)
 
     # cancel all unfinished orders
     print('Cancel all orders')
@@ -44,7 +45,11 @@ if __name__ == "__main__":
 
     # re-order
     print('Send new orders')
-    run_policy(rmt_srv, float_digits=float_digits, target_coin=target_coin, base_coin=base_coin)
+    policy = Policy(db_api=db_api, rmt_srv=rmt_srv, target_coin=target_coin,
+                    base_coin=base_coin, target_amount_digits=3,
+                    base_amount_digits=2, price_digits=2
+                    )
+    policy.run_policy()
 
     # insert new account snapshot in database
     print('Update account')

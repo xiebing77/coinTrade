@@ -3,7 +3,6 @@
 from common.base_obj import BaseObj
 from binance.enums import *
 from binance.client import Client
-import json
 import os
 from datetime import datetime
 
@@ -80,7 +79,7 @@ class RmtSrvObj(BaseObj):
             new_order['type'] = 'sell'
         new_order['symbol'] = order['symbol']
         new_order['timestamp'] = order['time']/1000
-        new_order['create_date'] = datetime.fromtimestamp(new_order['timestamp']/1000).strftime("%Y-%m-%d %H:%M:%S")
+        new_order['create_date'] = datetime.fromtimestamp(new_order['timestamp']).strftime("%Y-%m-%d %H:%M:%S")
         new_order['order_id'] = str(order['orderId'])
         new_order['amount'] = order['origQty']
         new_order['avg_price'] = order['price']
@@ -90,13 +89,14 @@ class RmtSrvObj(BaseObj):
 
     def buy(self, price, amount):
         self.debug('Buy order: pair(%s), price(%s), amount(%s)' % (self.symbol, price, amount))
-        ret = json.loads(self.rmt_srv_obj.create_order(symbol=self.symbol, side=SIDE_BUY,
-                                                       type=ORDER_TYPE_LIMIT, price=price, quantity=amount))
-        self.debug(ret)
+        ret = self.rmt_srv_obj.create_order(symbol=self.symbol, side=SIDE_BUY,
+                                            type=ORDER_TYPE_LIMIT, timeInForce=TIME_IN_FORCE_GTC,
+                                            price=price, quantity=amount)
+        # self.debug(ret)
         try:
-            if ret['result']:
-                self.debug('Return buy order ID: %s' % ret['order_id'])
-                return ret['order_id']
+            if ret['orderId']:
+                # self.debug('Return buy order ID: %s' % ret['orderId'])
+                return ret['orderId']
             else:
                 self.debug('Place order failed')
                 return None
@@ -106,13 +106,14 @@ class RmtSrvObj(BaseObj):
 
     def sell(self, price, amount):
         self.debug('Sell order: pair(%s), price(%s), amount(%s)' % (self.symbol, price, amount))
-        ret = json.loads(self.rmt_srv_obj.create_order(symbol=self.symbol, side=SIDE_SELL,
-                                                       type=ORDER_TYPE_LIMIT_MAKER, price=price, quantity=amount))
-        self.debug(ret)
+        ret = self.rmt_srv_obj.create_order(symbol=self.symbol, side=SIDE_SELL,
+                                            type=ORDER_TYPE_LIMIT, timeInForce=TIME_IN_FORCE_GTC,
+                                            price=price, quantity=amount)
+        # self.debug(ret)
         try:
-            if ret['result']:
-                self.debug('Return sell order ID: %s' % ret['order_id'])
-                return ret['order_id']
+            if ret['orderId']:
+                # self.debug('Return sell order ID: %s' % ret['orderId'])
+                return ret['orderId']
             else:
                 self.debug('Place order failed')
                 return None
@@ -121,7 +122,6 @@ class RmtSrvObj(BaseObj):
             return None
 
     def cancel_orders(self):
-        orders = json.loads(self.rmt_srv_obj.get_all_orders(symbol=self.symbol))['orders']
+        orders = self.rmt_srv_obj.get_open_orders(symbol=self.symbol)
         for order in orders:
-            self.rmt_srv_obj.cancel_order(symbol=self.symbol, orderId=order['order_id'])
-
+            self.rmt_srv_obj.cancel_order(symbol=self.symbol, orderId=order['orderId'])

@@ -26,14 +26,22 @@ class DbApi(object):
         if end is None:
             end = time.time()
         ret = collection.find({"timestamp": {"$gte": begin, "$lte": end}})
-        return ret
+        orders = []
+        for i in ret:
+            del(i['_id'])
+            orders.append(i)
+        return orders
 
     def get_accounts_by_time(self, begin, end=None):
         collection = self.db.account
         if end is None:
             end = time.time()
         ret = collection.find({"timestamp": {"$gte": begin, "$lte": end}})
-        return ret
+        accounts = []
+        for i in ret:
+            del(i['_id'])
+            accounts.append(i)
+        return accounts
 
     def get_pending_orders(self):
         collection = self.db.order
@@ -57,9 +65,9 @@ class DbApi(object):
                            "balance": account["balance"]})
 
 
-if __name__ == "__main__":
-    db_api = DbApi("mongodb://localhost:27017/", 'binance')
-    acnt = {"coin": "ETH", "balance": 2000}
-    db_api.insert_account(acnt)
-    for i in db_api.get_accounts_by_time(1527402298):
-        print(i)
+# if __name__ == "__main__":
+#     db_api = DbApi("mongodb://localhost:27017/", 'binance')
+#     acnt = {"coin": "ETH", "balance": 2000}
+#     db_api.insert_account(acnt)
+#     for i in db_api.get_accounts_by_time(1527402298):
+#         print(i)

@@ -4,13 +4,13 @@ import datetime
 
 from binance.enums import KLINE_INTERVAL_1DAY
 from setup import *
-import binance.spot_obj as spot_obj
+from binance.rmt_srv import RmtSrvObj
 from common import db_api
 from policy import send_report
 from common.lib import reserve_float
 from conf import FLOAT_DIGITS
 
-PROFIT_RATIO = 0.1
+PROFIT_RATIO = 0.07
 FEE_RATIO = 0.002
 
 if __name__ == "__main__":
@@ -20,15 +20,15 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     # print(args)
-    base_coin = args.b
-    target_coin = args.t
+    base_coin = args.b.upper()
+    target_coin = args.t.upper()
 
     present = datetime.datetime.now()
     print('\n%s Check if any order is dealt' % present)
 
-    pair = '%s%s' % (target_coin.upper(), base_coin.upper())
+    pair = '%s%s' % (target_coin, base_coin)
     print("The pair is %s " % pair)
-    rmt_srv = spot_obj.RmtSrvObj(pair, KLINE_INTERVAL_1DAY, 7, debug=True)
+    rmt_srv = RmtSrvObj(pair, KLINE_INTERVAL_1DAY, 7, debug=True)
     update_flag = False
 
     # check if any order is dealt

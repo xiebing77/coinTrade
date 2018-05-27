@@ -1,97 +1,86 @@
 #!/usr/bin/python
-import os
-
+from binance.enums import KLINE_INTERVAL_1DAY
 from binance.rmt_srv import RmtSrvObj
-from common.email_obj import EmailObj
 from common.lib import reserve_float
-from mongo.db_api import DbApi
-from jinja2 import Environment, FileSystemLoader
-
-from setup import *
 
 PRICE_GAP = 0.04
 PARTITION_NUM = 4
-MIN_COIN_AMOUNT = 10
-BASE_COIN_RESERVE = 0
-TARGET_COIN_RESERVE = 0
 
 SELL_BATCH_RATIO = [PRICE_GAP, PRICE_GAP * 2, PRICE_GAP * 3, PRICE_GAP * 4, PRICE_GAP * 5, PRICE_GAP * 6, PRICE_GAP * 7, PRICE_GAP * 8]
 BUY_BATCH_RATIO = [PRICE_GAP, PRICE_GAP * 2, PRICE_GAP * 3, PRICE_GAP * 4, PRICE_GAP * 5, PRICE_GAP * 6, PRICE_GAP * 7, PRICE_GAP * 8]
 
-db_api = DbApi("mongodb://localhost:27017/", 'binance')
 
+class Policy(object):
+    def __init__(self, db_api, rmt_srv, target_coin, base_coin,
+                 target_amount_digits, base_amount_digits, price_digits,
+                 base_coin_reserve=0, target_coin_reserve=0):
+        self.db_api = db_api
+        self.rmt_srv = rmt_srv
+        self.target_coin = target_coin
+        self.base_coin = base_coin
+        self.target_amount_digits = target_amount_digits
+        self.base_amount_digits = base_amount_digits
+        self.price_digits = price_digits
+        self.base_coin_reserve = base_coin_reserve
+        self.target_coin_reserve = target_coin_reserve
 
-def run_policy(spot_instance, float_digits, target_coin, base_coin):
-    sell_policy(spot_instance, float_digits, target_coin)
-    buy_policy(spot_instance, float_digits, base_coin)
+    def run_policy(self):
+        self.sell_policy()
+        self.buy_policy()
 
+    def buy_policy(self):
+        """
+        coin: base coin, like USDT
+        """
+        print('Begin to send buy order...')
+        medium_price = self.rmt_srv.medium_price
+        current_price = self.rmt_srv.current_price
+        # base_price = min(medium_price, current_price)
+        base_price = current_price
+        print('Medium price: %s' % medium_price)
+        print('Current price: %s' % current_price)
 
-def buy_policy(spot_instance, float_digits, coin):
-    """
-    coin: base coin, like ETH
-    """
-    print('Begin to send buy order...')
-    medium_price = spot_instance.medium_price
-    current_price = spot_instance.current_price
-    base_price = min(medium_price, current_price)
-    print('Medium price: %s' % medium_price)
-    print('Current price: %s' % current_price)
+        total = float(self.rmt_srv.balance(self.base_coin)['free']) - self.base_coin_reserve
+        base_amount = reserve_float(total / len(BUY_BATCH_RATIO), self.base_amount_digits)
 
-    total = float(spot_instance.balance(coin)['free']) - BASE_COIN_RESERVE
-    if total/base_price < MIN_COIN_AMOUNT:
+        for i in BUY_BATCH_RATIO:
+            price = reserve_float(base_price * (1 - i), self.price_digits)
+            amount = reserve_float(base_amount/price, self.target_amount_digits)
+            if amount == 0:
+                print("amount is 0")
+                return
+            order_id = self.rmt_srv.buy(price, amount)
+            if order_id is None:
+                continue
+            # insert new order into database
+            self.db_api.insert_order(self.rmt_srv.get_order(order_id))
         return
-    base_amount = reserve_float(total/len(BUY_BATCH_RATIO), float_digits)
 
-    for i in BUY_BATCH_RATIO:
-        price = reserve_float(base_price * (1 - i), float_digits)
-        amount = reserve_float(base_amount/price)
-        order_id = spot_instance.buy(price, amount)
-        if order_id is None:
-            continue
-        # insert new order into database
-        db_api.insert_order(spot_instance.get_order(order_id))
-    return
+    def sell_policy(self):
+        """
+        coin: target coin, like ETH
+        """
+        print('Begin to send sell order...')
+        medium_price = self.rmt_srv.medium_price
+        current_price = self.rmt_srv.current_price
+        # base_price = max(medium_price, current_price)
+        base_price = current_price
+        print('Medium price: %s' % medium_price)
+        print('Current price: %s' % current_price)
 
-
-def sell_policy(spot_instance, float_digits, coin):
-    """
-    coin: target coin, like DPY
-    """
-    print('Begin to send sell order...')
-    medium_price = spot_instance.medium_price
-    current_price = spot_instance.current_price
-    base_price = max(medium_price, current_price)
-    print('Medium price: %s' % medium_price)
-    print('Current price: %s' % current_price)
-
-    total = float(spot_instance.balance(coin)['free']) - TARGET_COIN_RESERVE
-    rest = total
-
-    if rest < MIN_COIN_AMOUNT:
-        return
-    amount = reserve_float(max(reserve_float(total/len(SELL_BATCH_RATIO), float_digits), MIN_COIN_AMOUNT))
-    for i in SELL_BATCH_RATIO:
-        price = reserve_float(base_price * (1 + i), float_digits)
-        order_id = spot_instance.sell(price, reserve_float(min(rest, amount)))
-        if order_id is None:
-            continue
-        # insert new order into database
-        db_api.insert_order(spot_instance.get_order(order_id))
-        rest -= amount
-        if rest < MIN_COIN_AMOUNT:
+        total = float(self.rmt_srv.balance(self.target_coin)['free']) - self.target_coin_reserve
+        amount = reserve_float(total / len(SELL_BATCH_RATIO), self.target_amount_digits)
+        if amount == 0:
+            print("amount is 0")
             return
 
-
-def send_report(orders, accounts, to_addr, subject='Coin Trade Daily Report', cc_addr=''):
-    # construct html
-    env = Environment(
-        loader=FileSystemLoader(template_dir),
-    )
-    template = env.get_template('template.html')
-    html = template.render(orders=orders, accounts=accounts)
-    # print(html)
-    email_obj = EmailObj(email_srv, email_user, email_pwd)
-    email_obj.send_mail(subject, html, email_user, to_addr, cc_addr)
+        for i in SELL_BATCH_RATIO:
+            price = reserve_float(base_price * (1 + i), self.price_digits)
+            order_id = self.rmt_srv.sell(price, amount)
+            if order_id is None:
+                continue
+            # insert new order into database
+            self.db_api.insert_order(self.rmt_srv.get_order(order_id))
 
 
 if __name__ == "__main__":
@@ -99,8 +88,14 @@ if __name__ == "__main__":
     target_coin = 'ETH'
     base_coin = 'USDT'
     # create a new instance
-    rmt_srv = RmtSrvObj(pair, '1day', 7, debug=True)
-    sell_policy(rmt_srv, 8, target_coin)
+    rmt_srv = RmtSrvObj(pair, line_type=KLINE_INTERVAL_1DAY, size=7, debug=True)
+    policy = Policy(db_url="mongodb://localhost:27017/",
+                    db_name="binance", rmt_srv=rmt_srv, target_coin=target_coin,
+                    base_coin=base_coin, target_amount_digits=3,
+                    base_amount_digits=2, price_digits=2
+                    )
+
+    policy.sell_policy()
     # buy_policy(okSpot, 8, base_coin)
     # print(okSpot.balance('dpy'))
     # print(okSpot.balance('eth'))
