@@ -40,7 +40,7 @@ if __name__ == "__main__":
     db_api = DbApi(db_url, db_name)
 
     # check if any order is dealt
-    orders = db_api.get_pending_orders()
+    orders = db_api.get_pending_orders(pair)
     for item in orders:
         order = rmt_srv.get_order(item['order_id'])
         # print(item['order_id'])
@@ -50,7 +50,7 @@ if __name__ == "__main__":
         if order is None:
             print("Not find order from exchanger, need to delete it in database: ")
             print(item)
-            db_api.delete_order(item['order_id'])
+            db_api.delete_order(item['symbol'], item['order_id'])
         elif order['status'] == 'Dealt':
             print("\n the order is done:")
             print(order)
@@ -83,6 +83,6 @@ if __name__ == "__main__":
         # local time is a little different from server time
         end_time = datetime.datetime.now() + datetime.timedelta(hours=1)
         begin_time = end_time - datetime.timedelta(days=2)
-        orders = db_api.get_orders_by_time(begin_time.timestamp(), end_time.timestamp())
+        orders = db_api.get_orders_by_time(pair, begin_time.timestamp(), end_time.timestamp())
         accounts = db_api.get_accounts_by_time(begin_time.timestamp(), end_time.timestamp())
         send_report(orders, accounts, email_receiver, subject='Coin Trade Daily Report - binance')

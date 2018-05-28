@@ -17,6 +17,10 @@ if __name__ == "__main__":
     parser.add_argument('-a', help='target amount digits')
     parser.add_argument('-d', help='base amount digits')
     parser.add_argument('-p', help='price digits')
+    parser.add_argument('-g', help='price gap')
+    parser.add_argument('-n', help='price gap num')
+    parser.add_argument('-r', help='target coin reserve')
+    parser.add_argument('-s', help='base coin reserve')
 
     args = parser.parse_args()
     # print(args)
@@ -25,6 +29,10 @@ if __name__ == "__main__":
     target_amount_digits = int(args.a)
     base_amount_digits = int(args.d)
     price_digits = int(args.p)
+    price_gap = float(args.g)
+    price_gap_num = int(args.n)
+    target_coin_reserve = float(args.r)
+    base_coin_reserve = float(args.s)
 
     present = datetime.datetime.now()
     print('\n%s Main start...' % present)
@@ -44,7 +52,7 @@ if __name__ == "__main__":
 
     # update pending orders in database
     print('Update pending orders')
-    orders = db_api.get_pending_orders()
+    orders = db_api.get_pending_orders(pair)
     for item in orders:
         order = rmt_srv.get_order(item['order_id'])
         if order is not None:
@@ -54,7 +62,9 @@ if __name__ == "__main__":
     print('Send new orders')
     policy = Policy(db_api=db_api, rmt_srv=rmt_srv, target_coin=target_coin,
                     base_coin=base_coin, target_amount_digits=target_amount_digits,
-                    base_amount_digits=base_amount_digits, price_digits=price_digits
+                    base_amount_digits=base_amount_digits, price_digits=price_digits,
+                    price_gap=price_gap, price_gap_num=price_gap_num,
+                    base_coin_reserve=base_coin_reserve, target_coin_reserve=target_coin_reserve
                     )
     policy.run_policy()
 
@@ -68,7 +78,7 @@ if __name__ == "__main__":
     # local time is a little different from server time
     end_time = datetime.datetime.now() + datetime.timedelta(hours=1)
     begin_time = end_time - datetime.timedelta(days=2)
-    orders = db_api.get_orders_by_time(begin_time.timestamp(), end_time.timestamp())
+    orders = db_api.get_orders_by_time(pair, begin_time.timestamp(), end_time.timestamp())
     accounts = db_api.get_accounts_by_time(begin_time.timestamp(), end_time.timestamp())
     for i in accounts:
         if i['balance'] < 0.001:

@@ -59,8 +59,8 @@ class Policy(object):
                 # insert new order into database
                 time.sleep(0.5)
                 self.db_api.insert_order(self.rmt_srv.get_order(order_id))
-            except Exception:
-                print(Exception)
+            except Exception as e:
+                print(e)
                 continue
         return
 
@@ -91,8 +91,8 @@ class Policy(object):
                 # insert new order into database
                 time.sleep(0.5)
                 self.db_api.insert_order(self.rmt_srv.get_order(order_id))
-            except Exception:
-                print(Exception)
+            except Exception as e:
+                print(e)
                 continue
 
 

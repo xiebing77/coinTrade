@@ -13,19 +13,19 @@ class DbApi(object):
         collection = self.db.order
         collection.insert(order)
 
-    def delete_order(self, order_id):
+    def delete_order(self, symbol, order_id):
         collection = self.db.order
-        collection.remove({"order_id": order_id})
+        collection.remove({'symbol': symbol, "order_id": order_id})
 
     def update_order(self, order):
         collection = self.db.order
-        collection.update({"order_id": order['order_id']}, order)
+        collection.update({'symbol': order['symbol'], "order_id": order['order_id']}, order)
 
-    def get_orders_by_time(self, begin, end=None):
+    def get_orders_by_time(self, symbol, begin, end=None):
         collection = self.db.order
         if end is None:
             end = time.time()
-        ret = collection.find({"timestamp": {"$gte": begin, "$lte": end}})
+        ret = collection.find({'symbol': symbol, "timestamp": {"$gte": begin, "$lte": end}})
         orders = []
         for i in ret:
             del(i['_id'])
@@ -43,17 +43,18 @@ class DbApi(object):
             accounts.append(i)
         return accounts
 
-    def get_pending_orders(self):
+    def get_pending_orders(self, symbol):
         collection = self.db.order
-        ret = collection.find({'$and': [{'status': {'$ne': 'Cancelled'}}, {'status': {'$ne': 'Dealt'}}]})
+        ret = collection.find({'symbol': symbol,
+                              '$and': [{'status': {'$ne': 'Cancelled'}}, {'status': {'$ne': 'Dealt'}}]})
         return ret
 
-    def get_order(self, order_id):
+    def get_order(self, symbol, order_id):
         """
         return a dict
         """
         collection = self.db.order
-        ret = collection.find({"order_id": order_id})
+        ret = collection.find({'symbol': symbol, "order_id": order_id})
         return ret
 
     def insert_account(self, account):
