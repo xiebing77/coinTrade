@@ -14,13 +14,17 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='coin trade')
     parser.add_argument('-b', help='base coin')
     parser.add_argument('-t', help='target coin')
-    # parser.add_argument('-f', help='float digits')
+    parser.add_argument('-a', help='target amount digits')
+    parser.add_argument('-d', help='base amount digits')
+    parser.add_argument('-p', help='price digits')
 
     args = parser.parse_args()
     # print(args)
     base_coin = args.b.upper()
     target_coin = args.t.upper()
-    # float_digits = args.f
+    target_amount_digits = int(args.a)
+    base_amount_digits = int(args.d)
+    price_digits = int(args.p)
 
     present = datetime.datetime.now()
     print('\n%s Main start...' % present)
@@ -49,8 +53,8 @@ if __name__ == "__main__":
     # re-order
     print('Send new orders')
     policy = Policy(db_api=db_api, rmt_srv=rmt_srv, target_coin=target_coin,
-                    base_coin=base_coin, target_amount_digits=3,
-                    base_amount_digits=2, price_digits=2
+                    base_coin=base_coin, target_amount_digits=target_amount_digits,
+                    base_amount_digits=base_amount_digits, price_digits=price_digits
                     )
     policy.run_policy()
 
@@ -63,7 +67,7 @@ if __name__ == "__main__":
     print('Send report')
     # local time is a little different from server time
     end_time = datetime.datetime.now() + datetime.timedelta(hours=1)
-    begin_time = end_time - datetime.timedelta(days=3)
+    begin_time = end_time - datetime.timedelta(days=2)
     orders = db_api.get_orders_by_time(begin_time.timestamp(), end_time.timestamp())
     accounts = db_api.get_accounts_by_time(begin_time.timestamp(), end_time.timestamp())
     for i in accounts:

@@ -45,7 +45,7 @@ class DbApi(object):
 
     def get_pending_orders(self):
         collection = self.db.order
-        ret = collection.find({"status": {"$ne": ["Cancelled", "Dealt"]}})
+        ret = collection.find({'$and': [{'status': {'$ne': 'Cancelled'}}, {'status': {'$ne': 'Dealt'}}]})
         return ret
 
     def get_order(self, order_id):
