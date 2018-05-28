@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
     db_url = "mongodb://localhost:27017/"
     db_name = "binance"
-    db_api = DbApi(db_url, db_name)
+    db_api = DbApi(db_url, db_name, mongo_user, mongo_pwd)
 
     # check if any order is dealt
     orders = db_api.get_pending_orders(pair)

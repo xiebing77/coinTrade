@@ -5,9 +5,10 @@ from pymongo import MongoClient
 
 
 class DbApi(object):
-    def __init__(self, url, db_name):
+    def __init__(self, url, db_name, user, pwd):
         client = MongoClient(url)
         self.db = eval('%s.%s' % (client, db_name))
+        self.db.authenticate(user, pwd)
 
     def insert_order(self, order):
         collection = self.db.order
@@ -65,10 +66,3 @@ class DbApi(object):
                            "coin": account["coin"],
                            "balance": account["balance"]})
 
-
-# if __name__ == "__main__":
-#     db_api = DbApi("mongodb://localhost:27017/", 'binance')
-#     acnt = {"coin": "ETH", "balance": 2000}
-#     db_api.insert_account(acnt)
-#     for i in db_api.get_accounts_by_time(1527402298):
-#         print(i)
