@@ -1,3 +1,7 @@
+.gitignore
 *.db
+*.log
+*.bak
+*.old
 __pycache__
 

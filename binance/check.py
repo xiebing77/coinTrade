@@ -85,4 +85,4 @@ if __name__ == "__main__":
         begin_time = end_time - datetime.timedelta(days=2)
         orders = db_api.get_orders_by_time(pair, begin_time.timestamp(), end_time.timestamp())
         accounts = db_api.get_accounts_by_time(begin_time.timestamp(), end_time.timestamp())
-        send_report(orders, accounts, email_receiver, subject='Coin Trade Daily Report - binance')
+        send_report(orders, accounts, email_receiver, subject='Coin Trade Check Report - %s' % pair)

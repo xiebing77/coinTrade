@@ -72,4 +72,4 @@ if __name__ == "__main__":
         for i in accounts:
             if i['balance'] < 0.001:
                 accounts.remove(i)
-        send_report(orders, accounts, email_receiver, subject='Coin Trade Daily Report - okex')
+        send_report(orders, accounts, email_receiver, subject='Coin Trade Check Report - %s' % pair)
