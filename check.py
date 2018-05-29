@@ -40,6 +40,7 @@ if __name__ == "__main__":
             # print(amount)
             db_api.update_order(order)
             if amount < 10:
+                print('amount is too small')
                 continue
             update_flag = True
             print('%s order is dealt: pair(%s), price(%s), amount(%s)' % (order['type'], pair, order['avg_price'],
