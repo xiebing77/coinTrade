@@ -79,7 +79,7 @@ if __name__ == "__main__":
     end_time = datetime.datetime.now() + datetime.timedelta(hours=1)
     begin_time = end_time - datetime.timedelta(days=2)
     orders = db_api.get_orders_by_time(pair, begin_time.timestamp(), end_time.timestamp())
-    accounts = db_api.get_accounts_by_time(begin_time.timestamp(), end_time.timestamp())
+    accounts = db_api.get_accounts_by_time(begin_time.timestamp(), end_time.timestamp(), coins=[base_coin, target_coin])
     for i in accounts:
         if i['balance'] < 0.001:
             accounts.remove(i)

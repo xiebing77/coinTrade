@@ -33,11 +33,19 @@ class DbApi(object):
             orders.append(i)
         return orders
 
-    def get_accounts_by_time(self, begin, end=None):
+    def get_accounts_by_time(self, begin, end=None, coins=None):
         collection = self.db.account
         if end is None:
             end = time.time()
-        ret = collection.find({"timestamp": {"$gte": begin, "$lte": end}})
+
+        if coins is None:
+            query = {"timestamp": {"$gte": begin, "$lte": end}}
+        else:
+            coins_list = []
+            for coin in coins:
+                coins_list.append({"coin": coin})
+            query = {"timestamp": {"$gte": begin, "$lte": end}, "$or": coins_list}
+        ret = collection.find(query)
         accounts = []
         for i in ret:
             del(i['_id'])
