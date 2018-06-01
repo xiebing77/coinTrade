@@ -12,3 +12,4 @@ email_pwd = os.environ.get('EMAIL_PWD')
 email_receiver = "pkguowu@sina.com"
 mongo_user = os.environ.get('MONGO_USER')
 mongo_pwd = os.environ.get('MONGO_PWD')
+db_url = "mongodb://localhost:27017/"

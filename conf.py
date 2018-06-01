@@ -1,1 +1,0 @@
-FLOAT_DIGITS = 8
