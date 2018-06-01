@@ -15,8 +15,9 @@ MIN_COIN_AMOUNT = 10
 BASE_COIN_RESERVE = 0
 TARGET_COIN_RESERVE = 0
 
-SELL_BATCH_RATIO = [PRICE_GAP, PRICE_GAP * 2, PRICE_GAP * 3, PRICE_GAP * 4, PRICE_GAP * 5, PRICE_GAP * 6, PRICE_GAP * 7, PRICE_GAP * 8]
-BUY_BATCH_RATIO = [PRICE_GAP, PRICE_GAP * 2, PRICE_GAP * 3, PRICE_GAP * 4, PRICE_GAP * 5, PRICE_GAP * 6, PRICE_GAP * 7, PRICE_GAP * 8]
+SELL_BATCH_RATIO = [PRICE_GAP, PRICE_GAP * 2, PRICE_GAP * 3, PRICE_GAP * 4, PRICE_GAP * 5]
+BUY_BATCH_RATIO = SELL_BATCH_RATIO
+# BUY_BATCH_RATIO = [PRICE_GAP, PRICE_GAP * 2, PRICE_GAP * 3, PRICE_GAP * 4, PRICE_GAP * 5, PRICE_GAP * 6, PRICE_GAP * 7, PRICE_GAP * 8]
 #BUY_BATCH_RATIO = [PRICE_GAP, PRICE_GAP * 2, PRICE_GAP * 3]
 
 
@@ -32,7 +33,8 @@ def buy_policy(spot_instance, float_digits, coin):
     print('Begin to send buy order...')
     medium_price = spot_instance.medium_price
     current_price = spot_instance.current_price
-    base_price = min(medium_price, current_price)
+    # base_price = min(medium_price, current_price)
+    base_price = current_price
     print('Medium price: %s' % medium_price)
     print('Current price: %s' % current_price)
 

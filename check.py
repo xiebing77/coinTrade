@@ -7,12 +7,14 @@ from policy import send_report
 from common.lib import reserve_float
 from conf import FLOAT_DIGITS
 
-PROFIT_RATIO = 0.08
+PROFIT_RATIO = 0.1
 FEE_RATIO = 0.002
 
 if __name__ == "__main__":
-    pair = 'dpy_eth'
-    target_coin = 'dpy'
+    # pair = 'dpy_eth'
+    # target_coin = 'dpy'
+    pair = 'lba_eth'
+    target_coin = 'lba'
     base_coin = 'eth'
 
     present = datetime.datetime.now()
