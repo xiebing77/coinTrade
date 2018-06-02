@@ -39,6 +39,16 @@ class RmtSrvObj(BaseObj):
         regular_user = user['balances']
         return regular_user
 
+    def get_balance(self, coin):
+        coin_info = {'coin': coin, 'free': 0, 'frozen': 0, 'balance': 0}
+        for item in self.account:
+            if item['asset'] == coin:
+                coin_info['free'] = float(item['free'])
+                coin_info['frozen'] = float(item['locked'])
+                coin_info['balance'] = coin_info['free'] + coin_info['frozen']
+                break
+        return coin_info
+
     def get_available_coins(self):
         coins = []
         for item in self.account:

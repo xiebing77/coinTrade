@@ -25,6 +25,14 @@ class RmtSrvObj(BaseObj):
         regular_user = {'free': user['info']['funds']['free'], 'frozen': user['info']['funds']['freezed']}
         return regular_user
 
+    def get_balance(self, coin):
+        free = self.account['free']
+        frozen = self.account['frozen']
+        free_coin = float(free[coin])
+        frozen_coin = float(frozen[coin])
+        balance = free_coin + frozen_coin
+        return {'coin': coin, 'free': free_coin, 'frozen': frozen_coin, 'balance': balance}
+
     def get_available_coins(self):
         free = self.account['free']
         frozen = self.account['frozen']
@@ -83,10 +91,10 @@ class RmtSrvObj(BaseObj):
     def sell(self, price, amount):
         self.debug('Sell order: pair(%s), price(%s), amount(%s)' % (self.symbol, price, amount))
         ret = json.loads(self.rmt_srv_obj.trade(self.symbol, 'sell', price=str(price), amount=str(amount)))
-        self.debug(ret)
+        # self.debug(ret)
         try:
             if ret['result']:
-                self.debug('Return sell order ID: %s' % ret['order_id'])
+                # self.debug('Return sell order ID: %s' % ret['order_id'])
                 return ret['order_id']
             else:
                 self.debug('Place order failed')

@@ -26,7 +26,7 @@ class DbApi(object):
         collection = self.db.order
         if end is None:
             end = time.time()
-        ret = collection.find({'symbol': symbol, "timestamp": {"$gte": begin, "$lte": end}})
+        ret = collection.find({'symbol': symbol, "timestamp": {"$gte": begin, "$lte": end}}).sort('timestamp', -1)
         orders = []
         for i in ret:
             del(i['_id'])
@@ -45,7 +45,7 @@ class DbApi(object):
             for coin in coins:
                 coins_list.append({"coin": coin})
             query = {"timestamp": {"$gte": begin, "$lte": end}, "$or": coins_list}
-        ret = collection.find(query)
+        ret = collection.find(query).sort('timestamp', -1)
         accounts = []
         for i in ret:
             del(i['_id'])

@@ -44,9 +44,11 @@ if __name__ == "__main__":
         base_coin = base_coin.upper()
         target_coin = target_coin.upper()
         pair = '%s%s' % (target_coin, base_coin)
+        print("The pair is %s " % pair)
         rmt_srv = BnbRmtSrvObj(pair, KLINE_INTERVAL_1DAY, 7, debug=True)
     elif exchange == 'okex':
         pair = '%s_%s' % (target_coin, base_coin)
+        print("The pair is %s " % pair)
         rmt_srv = OkexRmtSrvObj(pair, '1day', 7, debug=True)
     else:
         print('Wrong exchange name: %s' % exchange)
@@ -54,7 +56,6 @@ if __name__ == "__main__":
         rmt_srv = None
         exit(1)
 
-    print("The pair is %s " % pair)
     db_name = exchange
     db_api = DbApi(db_url, db_name, mongo_user, mongo_pwd)
 
@@ -82,9 +83,11 @@ if __name__ == "__main__":
     policy.run_policy()
 
     # insert new account snapshot in database
-    print('Update account')
-    for i in rmt_srv.get_available_coins():
-        db_api.insert_account(i)
+    print('Updating account...')
+    db_api.insert_account(rmt_srv.get_balance(base_coin))
+    db_api.insert_account(rmt_srv.get_balance(target_coin))
+    # for i in rmt_srv.get_available_coins():
+    #     db_api.insert_account(i)
 
     # send report
     print('Send report')
