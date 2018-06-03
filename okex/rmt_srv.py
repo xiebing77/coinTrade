@@ -51,27 +51,30 @@ class RmtSrvObj(BaseObj):
             return None
 
         order = ret[0]
+        new_order = {}
         if order['status'] == -1:
-            order['status'] = 'Cancelled'
+            new_order['status'] = 'Cancelled'
         elif order['status'] == 0:
-            order['status'] = 'Not deal'
+            new_order['status'] = 'Not deal'
         elif order['status'] == 1:
-            order['status'] = 'Part dealt'
+            new_order['status'] = 'Part dealt'
         elif order['status'] == 2:
-            order['status'] = 'Dealt'
+            new_order['status'] = 'Dealt'
         elif order['status'] == 3:
-            order['status'] = 'Cancelling'
+            new_order['status'] = 'Cancelling'
         else:
-            order['status'] = 'Error'
+            new_order['status'] = 'Error'
 
-        order['timestamp'] = order['create_date']/1000
-        order['create_date'] = datetime.fromtimestamp(order['create_date']/1000).strftime("%Y-%m-%d %H:%M:%S")
-        order['order_id'] = str(order['order_id'])
-        order['amount'] = order['amount']
-        order['avg_price'] = order['avg_price']
-        order['deal_amount'] = order['deal_amount']
-        order['price'] = order['price']
-        return order
+        new_order['symbol'] = order['symbol']
+        new_order['type'] = order['type']
+        new_order['timestamp'] = order['create_date']/1000
+        new_order['create_date'] = datetime.fromtimestamp(order['create_date']/1000).strftime("%Y-%m-%d %H:%M:%S")
+        new_order['order_id'] = str(order['order_id'])
+        new_order['amount'] = order['amount']
+        new_order['avg_price'] = order['avg_price']
+        new_order['deal_amount'] = order['deal_amount']
+        new_order['price'] = order['price']
+        return new_order
 
     def buy(self, price, amount):
         self.debug('Buy order: pair(%s), price(%s), amount(%s)' % (self.symbol, price, amount))

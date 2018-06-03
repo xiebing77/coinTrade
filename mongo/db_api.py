@@ -30,6 +30,9 @@ class DbApi(object):
         orders = []
         for i in ret:
             del(i['_id'])
+            del(i['timestamp'])
+            del(i['avg_price'])
+            del(i['order_id'])
             orders.append(i)
         return orders
 
@@ -49,6 +52,7 @@ class DbApi(object):
         accounts = []
         for i in ret:
             del(i['_id'])
+            del(i['timestamp'])
             accounts.append(i)
         return accounts
 
