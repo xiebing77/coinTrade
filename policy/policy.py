@@ -71,8 +71,8 @@ class Policy(object):
         print('Begin to send sell order...')
         medium_price = self.rmt_srv.medium_price
         current_price = self.rmt_srv.current_price
-        base_price = max(medium_price, current_price)
-        # base_price = current_price
+        # base_price = max(medium_price, current_price)
+        base_price = current_price
         print('Medium price: %s' % medium_price)
         print('Current price: %s' % current_price)
 

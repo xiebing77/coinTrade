@@ -56,6 +56,11 @@ class DbApi(object):
             accounts.append(i)
         return accounts
 
+    def get_orders(self, query):
+        collection = self.db.order
+        ret = collection.find(query)
+        return ret
+
     def get_pending_orders(self, symbol):
         collection = self.db.order
         ret = collection.find({'symbol': symbol,
