@@ -26,7 +26,8 @@ class DbApi(object):
         collection = self.db.order
         if end is None:
             end = time.time()
-        ret = collection.find({'symbol': symbol, "timestamp": {"$gte": begin, "$lte": end}}).sort('timestamp', -1)
+        ret = collection.find({'symbol': symbol, 'status': {'$ne': 'Cancelled'},
+                               "timestamp": {"$gte": begin, "$lte": end}}).sort('timestamp', -1)
         orders = []
         for i in ret:
             del(i['_id'])
