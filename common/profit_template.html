@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 15px;
+        text-align: left;
+    }
+    table#t01 {
+        width: 100%;
+        background-color: #f1f1c1;
+    }
+    </style>
+</head>
+
+<body>
+    <table id="t01">
+        <caption>Profit Status</caption>
+        <tr>
+            {% for item in profits[0] %}
+                <th>{{ item }}</th>
+            {% endfor %}
+        </tr>
+
+        {% for profit in profits %}
+        <tr>
+            {% for item in profit %}
+                <td>{{ profit[item] }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+    <br />
+
+</body>
+</html>

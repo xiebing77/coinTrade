@@ -10,6 +10,27 @@ class DbApi(object):
         self.db = eval('%s.%s' % (client, db_name))
         self.db.authenticate(user, pwd)
 
+    def insert_profit(self, profit):
+        collection = self.db.profit
+        collection.insert(profit)
+
+    def get_profit(self, query):
+        collection = self.db.profit
+        ret = collection.find(query)
+        return ret
+
+    def get_profits_by_time(self, symbol, begin, end=None):
+        collection = self.db.profit
+        if end is None:
+            end = time.time()
+        ret = collection.find({'symbol': symbol, "timestamp": {"$gte": begin, "$lte": end}}).sort('timestamp', -1)
+        profits = []
+        for i in ret:
+            del(i['_id'])
+            del(i['timestamp'])
+            profits.append(i)
+        return profits
+
     def insert_order(self, order):
         collection = self.db.order
         collection.insert(order)

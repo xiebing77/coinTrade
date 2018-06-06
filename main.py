@@ -93,7 +93,7 @@ if __name__ == "__main__":
     print('Send report')
     # local time is a little different from server time
     end_time = datetime.datetime.now() + datetime.timedelta(hours=1)
-    begin_time = end_time - datetime.timedelta(days=2)
+    begin_time = end_time - datetime.timedelta(days=5)
     orders = db_api.get_orders_by_time(pair, begin_time.timestamp(), end_time.timestamp())
     accounts = db_api.get_accounts_by_time(begin_time.timestamp(), end_time.timestamp(), coins=[base_coin, target_coin])
     for i in accounts:

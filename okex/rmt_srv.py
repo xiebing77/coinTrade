@@ -70,10 +70,10 @@ class RmtSrvObj(BaseObj):
         new_order['timestamp'] = order['create_date']/1000
         new_order['create_date'] = datetime.fromtimestamp(order['create_date']/1000).strftime("%Y-%m-%d %H:%M:%S")
         new_order['order_id'] = str(order['order_id'])
-        new_order['amount'] = order['amount']
-        new_order['avg_price'] = order['avg_price']
-        new_order['deal_amount'] = order['deal_amount']
-        new_order['price'] = order['price']
+        new_order['amount'] = str(order['amount'])
+        new_order['avg_price'] = str(order['avg_price'])
+        new_order['deal_amount'] = str(order['deal_amount'])
+        new_order['price'] = str(order['price'])
         return new_order
 
     def buy(self, price, amount):
