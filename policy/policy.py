@@ -44,6 +44,7 @@ class Policy(object):
         print('Current price: %s' % current_price)
 
         total = float(self.rmt_srv.balance(self.base_coin)['free']) - self.base_coin_reserve
+        print('%s total amount: %f' % (self.base_coin, total))
         base_amount = reserve_float(total / len(self.price_gap), self.base_amount_digits)
 
         for i in self.price_gap:
@@ -77,6 +78,7 @@ class Policy(object):
         print('Current price: %s' % current_price)
 
         total = float(self.rmt_srv.balance(self.target_coin)['free']) - self.target_coin_reserve
+        print('%s total amount: %f' % (self.target_coin, total))
         amount = reserve_float(total / len(self.price_gap), self.target_amount_digits)
         if amount == 0:
             print("amount is 0")
