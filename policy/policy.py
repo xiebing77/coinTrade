@@ -86,7 +86,10 @@ class Policy(object):
 
         for i in self.price_gap:
             try:
+                print(self.price_digits)
                 price = reserve_float(base_price * (1 + i), self.price_digits)
+                print(base_price * (1 + i))
+                print(price)
                 order_id = self.rmt_srv.sell(price, amount)
                 if order_id is None:
                     continue
