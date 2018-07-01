@@ -68,9 +68,12 @@ if __name__ == "__main__":
     print('Update pending orders')
     orders = db_api.get_pending_orders(pair)
     for item in orders:
-        order = rmt_srv.get_order(item['order_id'])
-        if order is not None:
-            db_api.update_order(order)
+        try:
+            order = rmt_srv.get_order(item['order_id'])
+            if order is not None:
+                db_api.update_order(order)
+        except Exception:
+            continue
 
     # re-order
     print('Send new orders')
