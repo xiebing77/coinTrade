@@ -8,5 +8,5 @@ source ~/.profile
 
 base_dir=$(cd `dirname $0`; pwd)
 
-python3.6 $base_dir/calc_revenue.py -t eth -b usdt -e binance
-python3.6 $base_dir/calc_revenue.py -t lba -b eth -e okex
+#python3.6 $base_dir/calc_revenue.py -t eth -b usdt -e binance
+#python3.6 $base_dir/calc_revenue.py -t lba -b eth -e okex
