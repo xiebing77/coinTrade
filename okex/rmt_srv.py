@@ -13,8 +13,9 @@ rest_url = 'www.okex.com'
 
 
 class RmtSrvObj(BaseObj):
-    def __init__(self, symbol, line_type, size=0, since='', debug=False):
+    def __init__(self, symbol, line_type, size=0, since='', debug=False, balance_min=0.01):
         self.rmt_srv_obj = OKCoinSpot(rest_url, api_key, secret_key)
+        self.balance_min = balance_min
         super(RmtSrvObj, self).__init__(symbol, line_type, size, since, debug)
 
     def get_kline(self):
@@ -41,7 +42,7 @@ class RmtSrvObj(BaseObj):
             free_coin = float(free[coin])
             frozen_coin = float(frozen[coin])
             balance = free_coin + frozen_coin
-            if balance:
+            if balance > self.balance_min:
                 coins.append({'coin': coin, 'free': free_coin, 'frozen': frozen_coin, 'balance': balance})
         return coins
 
