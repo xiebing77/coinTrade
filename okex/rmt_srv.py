@@ -5,6 +5,7 @@ from okex.OkcoinSpotAPI import OKCoinSpot
 import json
 import os
 from datetime import datetime
+import pandas as pd
 
 api_key = os.environ.get('OKEX_API_KEY')
 secret_key = os.environ.get('OKEX_SECRET_KEY')
@@ -19,7 +20,10 @@ class RmtSrvObj(BaseObj):
         super(RmtSrvObj, self).__init__(symbol, line_type, size, since, debug)
 
     def get_kline(self):
-        return self.rmt_srv_obj.get_kline(self.symbol, self.type, self.size, self.since)
+        kline = self.rmt_srv_obj.get_kline(self.symbol, self.type, self.size, self.since)
+        df = pd.DataFrame(kline,columns=['open_time', 'open','high','low','close','volume','close_time',
+            'quote_asset_volume','number_of_trades','taker_buy_base_asset_volume','taker_buy_quote_asset_volume','ignore'])
+        return df
 
     def get_account(self):
         user = json.loads(self.rmt_srv_obj.userinfo())

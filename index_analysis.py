@@ -12,8 +12,7 @@ from common.lib import send_report
 import logging
 
 def OnTick():
-    kline = rmt_srv.get_kline()
-    #print('kline : ', kline)
+    df = rmt_srv.get_kline()
 
     '''
     orders = pd.DataFrame(rmt_srv.get_open_orders())
@@ -39,7 +38,6 @@ def OnTick():
     balance_target = rmt_srv.balance(arg_dict['target_coin'])
     logging.info('target coin: %s;  balance: %s', arg_dict['target_coin'], balance_target)
     
-    df = pd.DataFrame(kline,columns=['open_time', 'open','high','low','close','volume','close_time','quote_asset_volume','number_of_trades','taker_buy_base_asset_volume','taker_buy_quote_asset_volume','ignore'])
     close = [float(x) for x in df['close']]
     
     # 调用talib计算10日移动平均线的值

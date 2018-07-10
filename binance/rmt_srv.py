@@ -5,6 +5,7 @@ from binance.enums import *
 from binance.client import Client
 import os
 from datetime import datetime
+import pandas as pd
 
 api_key = os.environ.get('BINANCE_API_KEY')
 secret_key = os.environ.get('BINANCE_SECRET_KEY')
@@ -17,8 +18,9 @@ class RmtSrvObj(BaseObj):
         super(RmtSrvObj, self).__init__(symbol, line_type, size, since, debug)
 
     def get_kline(self):
-        return self.rmt_srv_obj.get_klines(symbol=self.symbol, interval=self.type,
-                                           limit=self.size)
+        kline = self.rmt_srv_obj.get_klines(symbol=self.symbol, interval=self.type,limit=self.size)
+        df = pd.DataFrame(kline,columns=['open_time', 'open','high','low','close','volume'])
+        return df
 
     def balance(self, coin=''):
         balance = {'free': 0, 'frozen': 0}
