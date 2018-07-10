@@ -99,7 +99,7 @@ def OnTick():
                 if cost_base_amount > 0: #
                     buy_target_amount = reserve_float(cost_base_amount / cur_price, int(args.a))
                     logging.info('buy target coin amount: %f', buy_target_amount)
-                    limit_buy_price = reserve_float(cur_price, int(args.p))
+                    limit_buy_price = reserve_float(cur_price * 1.1, int(args.p))
                     order_id = rmt_srv.buy(limit_buy_price, buy_target_amount)
                     logging.info('current price: %f;  limit buy price: %f;  order_id: %f ',cur_price, limit_buy_price, order_id)
                     # send_report(orders, accounts, args.r, subject='Coin Trade  - %s' % pair)
