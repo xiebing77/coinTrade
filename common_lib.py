@@ -5,6 +5,7 @@ import argparse
 
 from binance.enums import KLINE_INTERVAL_1DAY
 from binance.rmt_srv import RmtSrvObj as BnbRmtSrvObj
+from okex.rmt_srv import RmtSrvObj as OkexRmtSrvObj
 
 def get_common_cmd_parser():
     parser = argparse.ArgumentParser(description='coin trade')
