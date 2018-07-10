@@ -8,6 +8,8 @@ import talib
 import common_lib
 from common.lib import reserve_float
 import indicator
+from common.lib import send_report
+import logging
 
 def OnTick():
     kline = rmt_srv.get_kline()
@@ -31,11 +33,11 @@ def OnTick():
     '''
 
     balance_base = rmt_srv.balance(arg_dict['base_coin'])
-    print('base coin: ',arg_dict['base_coin'],'  balance: ',balance_base)
+    logging.info('base coin: ',arg_dict['base_coin'],'  balance: ',balance_base)
     
 
     balance_target = rmt_srv.balance(arg_dict['target_coin'])
-    print('target coin: ',arg_dict['target_coin'],'  balance: ',balance_target)
+    logging.info('target coin: ',arg_dict['target_coin'],'  balance: ',balance_target)
     
     df = pd.DataFrame(kline,columns=['open_time', 'open','high','low','close','volume','close_time','quote_asset_volume','number_of_trades','taker_buy_base_asset_volume','taker_buy_quote_asset_volume','ignore'])
     close = [float(x) for x in df['close']]
@@ -81,41 +83,43 @@ def OnTick():
     kdj_d_cur = df['kdj_d'].values[-1] 
     kdj_j_cur = df['kdj_j'].values[-1]
     cur_price = close[-1]
-    print('current price: ',cur_price,' kdj_k: ',kdj_k_cur,' kdj_d: ',kdj_d_cur,'kdj_j: ',kdj_j_cur)    
+    logging.info('current price: ',cur_price,' kdj_k: ',kdj_k_cur,' kdj_d: ',kdj_d_cur,'kdj_j: ',kdj_j_cur)
 
     target_free_count =float(balance_target['free'])
     target_frozen_count =float(balance_target['frozen'])
     if kdj_j_cur > kdj_k_cur+1 :
         if kdj_k_cur > kdj_d_cur+1 : # j>k>d 买入信号
-            print('j>k>d')
+            logging.info('j>k>d')
             if target_free_count > 0: # 持仓
                 pass
             else:                     # 空仓
                 cost_base_amount = min(float(balance_base['free']), base_coin_limit)
-                print('cost_base_amountt: ',cost_base_amount)
+                logging.info('cost_base_amountt: ',cost_base_amount)
 
                 if cost_base_amount > 0: #
                     buy_target_amount = reserve_float(cost_base_amount / cur_price, int(args.a))
-                    print('buy target coin amount:', buy_target_amount)
+                    logging.info('buy target coin amount:', buy_target_amount)
                     limit_buy_price = reserve_float(cur_price, int(args.p))
                     order_id = rmt_srv.buy(limit_buy_price, buy_target_amount)
-                    print('current price: ',cur_price,';  limit buy price: ', limit_buy_price,';  order_id: ',order_id)
+                    logging.info('current price: ',cur_price,';  limit buy price: ', limit_buy_price,';  order_id: ',order_id)
+                    send_report(orders, accounts, args.r, subject='Coin Trade  - %s' % pair)
+
                 else:
                     pass
         else:                      # j>k<d
             pass
     elif kdj_j_cur < kdj_k_cur-1:
         if kdj_k_cur < kdj_d_cur-1 : # j<k<d 卖出信号
-            print('j<k<d')
+            logging.info('j<k<d')
             if target_frozen_count > 0: # 有挂单
-                print('target_frozen_count: ',target_frozen_count)
+                logging.info('target_frozen_count: ',target_frozen_count)
             else:                       # 无挂单
                 if target_free_count > 0: # 持仓
-                    print('sell target coin num:',target_free_count)
+                    logging.info('sell target coin num:',target_free_count)
                     limit_sell_price = reserve_float(cur_price * 0.9, int(args.p))
                     sell_target_amount = reserve_float(target_free_count, int(args.a))
                     order_id = rmt_srv.sell(limit_sell_price, sell_target_amount)
-                    print('current price: ',cur_price,';  limit sell price: ', limit_sell_price,';  order_id: ',order_id)
+                    logging.info('current price: ',cur_price,';  limit sell price: ', limit_sell_price,';  order_id: ',order_id)
  
                 else:                     # 空仓
                     pass 
@@ -124,20 +128,24 @@ def OnTick():
  
 
 if __name__ == "__main__":
+
     parser=common_lib.get_common_cmd_parser()
     parser.add_argument('-limit', help='base coin limit')
     
     args = parser.parse_args()
-    print(args)
+    logging.info(args)
     
+    logfilename = 'log_' + args.t + '_' + args.b + '_' + args.i + '.txt'
+    logging.basicConfig(level=logging.INFO, filename=logfilename)
+
     base_coin_limit = float(args.limit)
 
     rmt_srv,arg_dict = common_lib.get_common_args(args)
 
     while True:
         tickStart = datetime.datetime.now() 
-        print('\n%s OnTick start...' % tickStart)
+        logging.info('\n%s OnTick start...' % tickStart)
         OnTick()
         tickEnd = datetime.datetime.now()
-        print('\n%s OnTick end...' % tickEnd, '; tick  cost: ', tickEnd-tickStart)
+        logging.info('\n%s OnTick end...' % tickEnd, '; tick  cost: ', tickEnd-tickStart)
         time.sleep(int(args.s))

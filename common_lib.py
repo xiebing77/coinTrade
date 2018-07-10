@@ -15,6 +15,8 @@ def get_common_cmd_parser():
     parser.add_argument('-p', help='price digits')
     parser.add_argument('-e', help='exchange name')
     parser.add_argument('-s', help='tick second')
+    parser.add_argument('-r', help='email receiver')
+    parser.add_argument('-i', help='instance No')
     return parser
 
 def get_common_args(args):
