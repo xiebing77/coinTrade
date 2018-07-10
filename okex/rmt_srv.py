@@ -20,9 +20,10 @@ class RmtSrvObj(BaseObj):
         super(RmtSrvObj, self).__init__(symbol, line_type, size, since, debug)
 
     def get_kline(self):
-        kline = self.rmt_srv_obj.get_kline(self.symbol, self.type, self.size, self.since)
-        df = pd.DataFrame(kline,columns=['open_time', 'open','high','low','close','volume'])
-        return df
+        return self.rmt_srv_obj.get_kline(self.symbol, self.type, self.size, self.since)
+
+    def get_kline_pd(self):
+        return pd.DataFrame(self.kline,columns=['open_time', 'open','high','low','close','volume'])
 
     def get_account(self):
         user = json.loads(self.rmt_srv_obj.userinfo())

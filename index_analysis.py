@@ -12,7 +12,7 @@ from common.lib import send_report
 import logging
 
 def OnTick():
-    df = rmt_srv.get_kline()
+    df = rmt_srv.get_kline_pd()
 
     '''
     orders = pd.DataFrame(rmt_srv.get_open_orders())

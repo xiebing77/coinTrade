@@ -18,10 +18,11 @@ class RmtSrvObj(BaseObj):
         super(RmtSrvObj, self).__init__(symbol, line_type, size, since, debug)
 
     def get_kline(self):
-        kline = self.rmt_srv_obj.get_klines(symbol=self.symbol, interval=self.type,limit=self.size)
-        df = pd.DataFrame(kline,columns=['open_time', 'open','high','low','close','volume','close_time',
+        return self.rmt_srv_obj.get_klines(symbol=self.symbol, interval=self.type,limit=self.size)
+
+    def get_kline_pd(self):
+        return pd.DataFrame(self.kline,columns=['open_time', 'open','high','low','close','volume','close_time',
             'quote_asset_volume','number_of_trades','taker_buy_base_asset_volume','taker_buy_quote_asset_volume','ignore'])
-        return df
 
     def balance(self, coin=''):
         balance = {'free': 0, 'frozen': 0}
