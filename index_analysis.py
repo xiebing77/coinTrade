@@ -102,7 +102,7 @@ def OnTick():
                     limit_buy_price = reserve_float(cur_price, int(args.p))
                     order_id = rmt_srv.buy(limit_buy_price, buy_target_amount)
                     logging.info('current price: %f;  limit buy price: %f;  order_id: %f ',cur_price, limit_buy_price, order_id)
-                    send_report(orders, accounts, args.r, subject='Coin Trade  - %s' % pair)
+                    # send_report(orders, accounts, args.r, subject='Coin Trade  - %s' % pair)
 
                 else:
                     pass
@@ -135,11 +135,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print(args)
 
-
     logfilename = 'log_' + args.t + '_' + args.b + '_' + args.i + '.log'
-    print('logfilename = ', logfilename)
     logging.basicConfig(level=logging.NOTSET, filename=logfilename)
-    logging.info('logging test!')
 
     base_coin_limit = float(args.limit)
 
