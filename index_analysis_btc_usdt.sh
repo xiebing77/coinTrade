@@ -12,4 +12,4 @@
 source ~/.profile
 base_dir=$(cd `dirname $0`; pwd)
 
-python3.6 $base_dir/index_analysis.py -t btc -b usdt -a 8 -d 2 -p 2 -e binance -s 600 -limit 100
+python3.6 $base_dir/index_analysis.py -t btc -b usdt -a 8 -d 2 -p 2 -e binance -s 600 -limit 100 -i 1
