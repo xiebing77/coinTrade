@@ -21,8 +21,7 @@ class RmtSrvObj(BaseObj):
 
     def get_kline(self):
         kline = self.rmt_srv_obj.get_kline(self.symbol, self.type, self.size, self.since)
-        df = pd.DataFrame(kline,columns=['open_time', 'open','high','low','close','volume','close_time',
-            'quote_asset_volume','number_of_trades','taker_buy_base_asset_volume','taker_buy_quote_asset_volume','ignore'])
+        df = pd.DataFrame(kline,columns=['open_time', 'open','high','low','close','volume'])
         return df
 
     def get_account(self):
